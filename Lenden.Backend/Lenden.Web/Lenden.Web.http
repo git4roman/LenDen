@@ -1,0 +1,6 @@
+@Lenden.Web_HostAddress = http://localhost:5074
+
+GET {{Lenden.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

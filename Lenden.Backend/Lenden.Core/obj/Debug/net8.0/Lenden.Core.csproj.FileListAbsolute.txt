@@ -1,0 +1,11 @@
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\bin\Debug\net8.0\Lenden.Core.deps.json
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\bin\Debug\net8.0\Lenden.Core.dll
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\bin\Debug\net8.0\Lenden.Core.pdb
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.AssemblyInfoInputs.cache
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.AssemblyInfo.cs
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.csproj.CoreCompileInputs.cache
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.dll
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\refint\Lenden.Core.dll
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.pdb
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\ref\Lenden.Core.dll
