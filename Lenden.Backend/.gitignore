@@ -1,0 +1,8 @@
+.idea/
+bin/
+obj/
+
+appsettings.json
+appsettings.Production.json
+
+wwwroot/**/*.min.*
