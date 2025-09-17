@@ -1,5 +1,7 @@
 using Lenden.Core;
 using Lenden.Core.GroupFeatures;
+using Lenden.Core.TransactionFeatures;
+using Lenden.Core.UserFeatures;
 using Lenden.Data;
 using Lenden.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IGroupRepository, GroupRepository>(); 
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); 
 
 

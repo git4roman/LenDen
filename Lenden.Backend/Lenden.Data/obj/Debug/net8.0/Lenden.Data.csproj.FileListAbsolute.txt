@@ -15,3 +15,4 @@ D:\ReactNative\LenDen\Lenden.Backend\Lenden.Data\obj\Debug\net8.0\Lenden.Data.pd
 D:\ReactNative\LenDen\Lenden.Backend\Lenden.Data\obj\Debug\net8.0\ref\Lenden.Data.dll
 D:\ReactNative\LenDen\Lenden.Backend\Lenden.Data\bin\Debug\net8.0\Lenden.Data.runtimeconfig.json
 D:\ReactNative\LenDen\Lenden.Backend\Lenden.Data\obj\Debug\net8.0\Lenden.Data.genruntimeconfig.cache
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Data\obj\Debug\net8.0\Lenden.Data.sourcelink.json

@@ -38,7 +38,7 @@ public class GroupApiController : ControllerBase
             if (existingGroup == null) throw new Exception("Group not found");
             existingGroup.Name = name;
             existingGroup.ImageUrl = "Updated Image Url";
-            await _unitOfWork.Group.UpdateAsync(existingGroup);
+            await _unitOfWork.Group.Update(existingGroup);
             await _unitOfWork.SaveChangesAsync();
             return Ok();
         }

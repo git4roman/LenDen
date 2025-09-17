@@ -9,3 +9,4 @@ D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.dl
 D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\refint\Lenden.Core.dll
 D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.pdb
 D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\ref\Lenden.Core.dll
+D:\ReactNative\LenDen\Lenden.Backend\Lenden.Core\obj\Debug\net8.0\Lenden.Core.sourcelink.json

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Lenden.Data.Configurations;
 
-public class TransactionConfiguration : IEntityTypeConfiguration<TransactionEntity>
+public class TransactionEntityConfiguration : IEntityTypeConfiguration<TransactionEntity>
 {
     public void Configure(EntityTypeBuilder<TransactionEntity> builder)
     {
