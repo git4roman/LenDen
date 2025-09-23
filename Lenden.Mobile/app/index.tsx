@@ -14,6 +14,9 @@ export default function Index() {
       <Link href="/login">
         <Text>Go to Login</Text>
       </Link>
+      <Link href="/(tabs)/(groups)">
+        <Text>Go to Group</Text>
+      </Link>
     </View>
   );
 }
