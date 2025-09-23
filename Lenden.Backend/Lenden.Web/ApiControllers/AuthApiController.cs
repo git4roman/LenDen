@@ -66,13 +66,13 @@ public class AuthApiController: ControllerBase
     private string SetJwtCookie(UserEntity user)
     {
         var token = GenerateJwtToken(user);
-        // _httpContextAccessor.HttpContext.Response.Cookies.Append("c_user", token, new CookieOptions
-        // {
-        //     HttpOnly = true,
-        //     Secure = false,
-        //     SameSite = SameSiteMode.Lax,
-        //     Expires = DateTime.UtcNow.AddDays(_jwtService.ExpiresInDays)
-        // });
+        _httpContextAccessor.HttpContext.Response.Cookies.Append("c_user", token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddDays(_jwtService.ExpiresInDays)
+        });
         return token;
     }
     

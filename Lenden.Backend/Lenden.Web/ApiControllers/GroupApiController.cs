@@ -1,5 +1,7 @@
 ﻿using Lenden.Core;
 using Lenden.Core.GroupFeatures;
+using Lenden.Core.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lenden.Web.ApiControllers;
@@ -9,28 +11,40 @@ namespace Lenden.Web.ApiControllers;
 public class GroupApiController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly CurrentUserHelper  _currentUserHelper;
 
-    public GroupApiController(IUnitOfWork unitOfWork)
+    public GroupApiController(IUnitOfWork unitOfWork,CurrentUserHelper currentUserHelper)
     {
         _unitOfWork = unitOfWork;
+        _currentUserHelper = currentUserHelper;
     }
 
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return Ok("Group API working");
+       var groups = await _unitOfWork.Group.GetAllAsync();
+        return Ok(groups);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateGroup([FromBody] string name)
+    [Authorize]
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateGroup(GroupDto dto)
     {
-        var createdGroup = new GroupEntity(name, "htpppsssssdfsd:////sdjfhkjsdkjfkshkdjfh");
+        var userId = _currentUserHelper.GetUserId();
+
+        if (!userId.HasValue)
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        var createdGroup = new GroupEntity(dto.Name, dto.ImageUrl, dto.CreatedBy);
         await _unitOfWork.Group.AddAsync(createdGroup);
         await _unitOfWork.SaveChangesAsync();
         return Ok();
     }
+    
+    [Authorize]
     [HttpPut("{id}/update")]
-    public async Task<IActionResult> CreateGroup(int id,[FromBody] string name)
+    public async Task<IActionResult> UpdateGroup(int id,[FromBody] string name)
     {
         try
         {
