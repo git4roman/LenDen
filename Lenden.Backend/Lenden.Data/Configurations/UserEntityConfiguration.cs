@@ -32,9 +32,6 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(u => u.GivenName)
             .HasMaxLength(50); // Optional, shorter length
 
-        builder.Property(u => u.FamilyName)
-            .HasMaxLength(50); // Optional, shorter length
-
         builder.Property(u => u.PictureUrl)
             .HasMaxLength(2048); // Optional, longer for URLs
 
@@ -44,6 +41,12 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(u => u.IsActive)
             .IsRequired()
             .HasDefaultValue(true); // Default to true
+        
+        builder.Property(u=>u.Role)
+            .HasColumnType("nvarchar(255)")
+            .HasColumnName("role")
+            .IsRequired()
+            .HasMaxLength(255);
 
         // Indexes
         builder.HasIndex(u => u.Email)

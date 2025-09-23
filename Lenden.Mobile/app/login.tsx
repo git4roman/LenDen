@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { sendGoogleUserToBackend } from "../src/services/userService";
 
 interface LoginProps {
   onSwitchToSignup: () => void;
@@ -82,7 +83,19 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
       await auth().signInWithCredential(googleCredential);
 
       console.log("Signed in with Google!");
-      console.log("User Info: ", auth().currentUser);
+      // console.log("User Info: ", auth().currentUser);
+      const currentUser = auth().currentUser;
+      if (currentUser) {
+        const userDetails = {
+          email: currentUser.email,
+          fullName: currentUser.displayName || "",
+          googleId: currentUser.uid,
+          pictureUrl: currentUser.photoURL || "",
+        };
+        await sendGoogleUserToBackend(userDetails);
+      }
+
+      // Call the service function to send user data to the backend
     } catch (e) {
       console.error("Google sign-in error: ", e);
     }

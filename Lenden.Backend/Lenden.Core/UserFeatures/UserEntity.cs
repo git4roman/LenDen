@@ -18,16 +18,18 @@ public class UserEntity
     //     CreatedAt = DateTime.UtcNow;
     //     IsActive = true;
     // }
-    public UserEntity(string email, string fullName,string googleId)
+    public UserEntity(string email, string fullName,string googleId,string pictureUrl)
     {
         GoogleId = googleId;
         Email = email;
         FullName = fullName;
+        PictureUrl = pictureUrl;
         // GivenName = givenName;
         // FamilyName = familyName;
         // PictureUrl = pictureUrl;
         CreatedAt = DateOnly.FromDateTime(DateTime.Now);
         IsActive = true;
+        Role = "user";
     }
 
     public int Id { get; private set; }
@@ -35,10 +37,12 @@ public class UserEntity
     public string Email { get; private set; } 
     public string FullName { get; private set; } 
     public string? GivenName { get; private set; } 
-    public string? FamilyName { get; private set; } 
     public string? PictureUrl { get; private set; } 
+    public bool EmailVerified { get; set; }
     public DateOnly CreatedAt { get; private set; } 
     public bool IsActive { get; private set; }
+    
+    public string Role { get; private set; }
     
 
 

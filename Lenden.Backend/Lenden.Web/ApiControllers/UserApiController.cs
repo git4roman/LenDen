@@ -15,12 +15,12 @@ public class UserApiController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUser(string email, string firstName, string lastName,string googleId)
+    public async Task<IActionResult> CreateUser(string email, string fullName,string googleId,string pictureUrl)
     {
         try
         {
-            var fullName = $"{firstName} {lastName}";
-            var createdUser = new UserEntity(email, fullName,googleId);
+            // var fullName = $"{firstName} {lastName}";
+            var createdUser = new UserEntity(email,fullName,googleId,pictureUrl);
            
             await _unitOfWork.User.AddAsync(createdUser);
             await _unitOfWork.SaveChangesAsync();
