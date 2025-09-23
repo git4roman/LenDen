@@ -4,16 +4,10 @@ import {
   GoogleSigninButton,
 } from "@react-native-google-signin/google-signin";
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import * as SecureStore from "expo-secure-store";
-// import axiosInstance from "@/src/services/axios";
-import { axiosInstance, signInWithGoogle } from "@/src/services";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { signInWithGoogle, onSignOut,onRegister } from "@/src/services";
+import { loginStyles as styles } from "@/src/styles";
+import { UserRegisterDto } from "@/src/types";
 
 interface LoginProps {
   onSwitchToSignup: () => void;
@@ -36,16 +30,6 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
     init();
   }, []);
 
-  const onSignOut = async () => {
-    try {
-      await auth().signOut();
-      await GoogleSignin.signOut();
-      console.log("User signed out!");
-    } catch (error) {
-      console.error("Error signing out: ", error);
-    }
-  };
-
   const onLogin = () => {
     auth()
       .signInWithEmailAndPassword(email, password)
@@ -65,48 +49,22 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
 
   const onGoogleButtonPress = async () => {
     try {
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
-
-      // Obtain the user's ID token
-      const { data } = await GoogleSignin.signIn();
-      const idToken = data ? data.idToken : null;
-
-      if (!idToken) {
-        throw new Error("No ID token found");
-      }
-
-      // Create a new Firebase credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      console.log("credential: ", googleCredential);
-
-      // Login with credential
-      await auth().signInWithCredential(googleCredential);
-
-      console.log("Signed in with Google!");
-      console.log("User Info: ", auth().currentUser);
-      const currentUser = auth().currentUser;
+      const currentUser = await signInWithGoogle();
       if (currentUser) {
-        const userDetails = {
+        const userRegisterDto: UserRegisterDto = {
           email: currentUser.email,
           fullName: currentUser.displayName || "",
           googleId: currentUser.uid,
           pictureUrl: currentUser.photoURL || "",
         };
-        const response = await axiosInstance.post(
-          "/AuthApi/register",
-          userDetails
-        );
-        console.log("User registered:", response.data);
-        await SecureStore.setItemAsync("userToken", response.data.token);
+        await onRegister(userRegisterDto);
       }
-
-      // Call the service function to send user data to the backend
     } catch (e) {
       console.error("Google sign-in error: ", e);
     }
   };
+
+  
 
   return (
     <View style={styles.container}>
@@ -142,51 +100,5 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-  },
-  input: {
-    width: "80%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    color: "black",
-    backgroundColor: "#C8C8C8",
-  },
-  button: {
-    width: "80%",
-    height: 50,
-    backgroundColor: "#6200ea",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  switchButton: {
-    marginTop: 15,
-    marginBottom: 15,
-  },
-  switchButtonText: {
-    color: "#6200ea",
-    fontSize: 14,
-  },
-  heading: {
-    fontSize: 30,
-    margin: 10,
-  },
-});
 
 export default Login;

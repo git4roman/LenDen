@@ -10,3 +10,13 @@ export const signInWithGoogle = async () => {
   await auth().signInWithCredential(credential);
   return auth().currentUser;
 };
+
+export const onSignOut = async () => {
+    try {
+      await auth().signOut();
+      await GoogleSignin.signOut();
+      console.log("User signed out!");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
