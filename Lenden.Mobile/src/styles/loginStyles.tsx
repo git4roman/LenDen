@@ -43,4 +43,9 @@ export const styles = StyleSheet.create({
     fontSize: 30,
     margin: 10,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
 });

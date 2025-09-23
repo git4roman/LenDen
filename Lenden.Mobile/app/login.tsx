@@ -1,6 +1,6 @@
 import { GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import {
   signInWithGoogle,
   signOutGoogle,
@@ -9,23 +9,14 @@ import {
 import { loginStyles as styles } from "@/src/styles";
 import { UserRegisterDto } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
-import { onLog } from "@react-native-firebase/app";
 
-interface LoginProps {
-  onSwitchToSignup: () => void;
-}
-
-const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
+const Login = () => {
   const [user, setUser] = useState<null | any>(null);
 
   useEffect(() => {
     const checkUser = async () => {
       const token = await SecureStore.getItemAsync("userToken");
-      if (token) {
-        setUser(true);
-      } else {
-        setUser(false);
-      }
+      setUser(!!token);
     };
     checkUser();
   }, []);
@@ -61,16 +52,13 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onSwitchToSignup} style={styles.switchButton}>
-        <Text style={styles.switchButtonText}>
-          Don't have an account? Sign Up
-        </Text>
-      </TouchableOpacity>
-      <GoogleSigninButton onPress={onGoogleButtonPress} />
-      {user && (
+      <Text style={styles.title}>Welcome to LenDen</Text>
+      {user ? (
         <TouchableOpacity style={styles.button} onPress={onSignOut}>
           <Text style={styles.buttonText}>Sign Out</Text>
         </TouchableOpacity>
+      ) : (
+        <GoogleSigninButton onPress={onGoogleButtonPress} />
       )}
     </View>
   );
