@@ -26,45 +26,26 @@ public class AuthApiController: ControllerBase
         _currentUserHelper = currentUserHelper;
     }
     
-    
-    
-    [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginDto loginDto)
-    
+    [HttpPost("authenticate")]
+    public async Task<IActionResult> Authenticate(UserAuthDto dto)
     {
-        var existingUser = await _unitOfWork.User.GetUserByUidAsync(loginDto.GoogleId);
-        if (existingUser == null) return NotFound("User not found");
-        
-       var token= SetJwtCookie(existingUser);
-        return Ok(new { token });
+        var existingUser = await _unitOfWork.User.GetUserByUidAsync(dto.GoogleId);
+        if (existingUser == null)
+        {
+            var createdUser = new UserEntity(dto.Email, dto.FullName, dto.GoogleId, dto.PictureUrl);
+            await _unitOfWork.User.AddAsync(createdUser);
+            await _unitOfWork.SaveChangesAsync();
+            return Ok(new { token = SetJwtCookie(createdUser) });
+        }
+        return Ok(new { token= SetJwtCookie(existingUser) });
     }
-
-    public class LoginDto
-    {
-        public string GoogleId { get; set; }
-    }
-    
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDto dto)
-    
-    {
-        var createdUser = new UserEntity(dto.Email,dto.FullName,dto.GoogleId,dto.PictureUrl);
-           
-        await _unitOfWork.User.AddAsync(createdUser);
-        await _unitOfWork.SaveChangesAsync();
-        
-        var token= SetJwtCookie(createdUser);
-        return Ok(new { token });
-    }
-    
-    public class RegisterDto
+    public class UserAuthDto
     {
         public string GoogleId { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
         public string PictureUrl { get; set; }
     }
-    
     private string GenerateJwtToken(UserEntity user)
     { 
         var claims = new[]
