@@ -5,7 +5,6 @@ import { signInWithGoogle, signOutGoogle, onRegister } from "@/src/services";
 import { loginStyles as styles } from "@/src/styles";
 import { UserRegisterDto } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
-import { onSignOut } from "@/src/services/authService";
 
 interface LoginProps {
   onSwitchToSignup: () => void;

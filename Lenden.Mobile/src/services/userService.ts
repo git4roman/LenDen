@@ -8,7 +8,6 @@ export const onRegister = async (userRegisterDto: UserRegisterDto) => {
       "/AuthApi/register",
       userRegisterDto
     );
-    console.log("User registered:", response.data);
     await SecureStore.setItemAsync("userToken", response.data.token);
   } catch (error) {
     console.error("Error registering user:", error);
