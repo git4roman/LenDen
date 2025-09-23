@@ -43,6 +43,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.Configure<JwtService>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddScoped<CurrentUserHelper>();
 
 
 var app = builder.Build();

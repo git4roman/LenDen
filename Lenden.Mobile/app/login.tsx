@@ -11,7 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { sendGoogleUserToBackend } from "../src/services/userService";
+import * as SecureStore from "expo-secure-store";
+// import axiosInstance from "@/src/services/axios";
+import { axiosInstance, signInWithGoogle } from "@/src/services";
 
 interface LoginProps {
   onSwitchToSignup: () => void;
@@ -83,7 +85,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
       await auth().signInWithCredential(googleCredential);
 
       console.log("Signed in with Google!");
-      // console.log("User Info: ", auth().currentUser);
+      console.log("User Info: ", auth().currentUser);
       const currentUser = auth().currentUser;
       if (currentUser) {
         const userDetails = {
@@ -92,7 +94,12 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
           googleId: currentUser.uid,
           pictureUrl: currentUser.photoURL || "",
         };
-        await sendGoogleUserToBackend(userDetails);
+        const response = await axiosInstance.post(
+          "/AuthApi/register",
+          userDetails
+        );
+        console.log("User registered:", response.data);
+        await SecureStore.setItemAsync("userToken", response.data.token);
       }
 
       // Call the service function to send user data to the backend
