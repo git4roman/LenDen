@@ -42,7 +42,17 @@ public class GroupApiController : ControllerBase
         var createdGroup = new GroupEntity(dto.Name, dto.ImageUrl, userId?? dto.CreatedBy);
         await _unitOfWork.Group.AddAsync(createdGroup);
         await _unitOfWork.SaveChangesAsync();
+        await AddUsersInternal(userId.Value, createdGroup.Id);
+        await _unitOfWork.SaveChangesAsync();
+        
         return Ok();
+    }
+    
+    private async Task AddUsersInternal(int userId, int groupId)
+    {
+            var newUser = new UserGroupEntity(userId, groupId);
+            await _unitOfWork.UserGroup.AddAsync(newUser);
+        
     }
     
     [Authorize]
