@@ -1,4 +1,6 @@
-﻿namespace Lenden.Core.UserFeatures;
+﻿using Lenden.Core.UserGroupFeatures;
+
+namespace Lenden.Core.UserFeatures;
 
 public class UserEntity
 {
@@ -43,6 +45,7 @@ public class UserEntity
     public bool IsActive { get; private set; }
     
     public string Role { get; private set; }
+    public ICollection<UserGroupEntity> UserGroups { get; private set; } = new List<UserGroupEntity>();
     
 
 

@@ -16,31 +16,30 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
 
         // Properties
         builder.Property(u => u.Id)
-            .ValueGeneratedOnAdd(); // Auto-incremented
+            .ValueGeneratedOnAdd(); 
 
         builder.Property(u => u.GoogleId)
-            .HasMaxLength(255); // Nullable, unique if provided
+            .HasMaxLength(255);
 
         builder.Property(u => u.Email)
             .IsRequired()
-            .HasMaxLength(255); // Required, standard length for emails
+            .HasMaxLength(255); 
 
         builder.Property(u => u.FullName)
             .IsRequired()
-            .HasMaxLength(100); // Required, reasonable length for names
+            .HasMaxLength(100); 
 
         builder.Property(u => u.GivenName)
-            .HasMaxLength(50); // Optional, shorter length
-
+            .HasMaxLength(50); 
         builder.Property(u => u.PictureUrl)
-            .HasMaxLength(2048); // Optional, longer for URLs
-
+            .HasMaxLength(2048); 
+        
         builder.Property(u => u.CreatedAt)
-            .HasColumnType("date"); // Maps DateOnly to SQL DATE
+            .HasColumnType("date");
 
         builder.Property(u => u.IsActive)
             .IsRequired()
-            .HasDefaultValue(true); // Default to true
+            .HasDefaultValue(true); 
         
         builder.Property(u=>u.Role)
             .HasColumnType("nvarchar(255)")

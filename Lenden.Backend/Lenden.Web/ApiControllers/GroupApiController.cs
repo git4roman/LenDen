@@ -1,5 +1,6 @@
 ﻿using Lenden.Core;
 using Lenden.Core.GroupFeatures;
+using Lenden.Core.UserGroupFeatures;
 using Lenden.Core.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,13 @@ public class GroupApiController : ControllerBase
         _unitOfWork = unitOfWork;
         _currentUserHelper = currentUserHelper;
     }
-
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-       var groups = await _unitOfWork.Group.GetAllAsync();
+        var userInfo = _currentUserHelper.GetUserInfo();
+       // var groups = await _unitOfWork.Group.GetAllAsync();
+       var groups = await _unitOfWork.Group.GetGroupsByUserId(userInfo.Id?? 0);
         return Ok(groups);
     }
 
@@ -36,7 +39,7 @@ public class GroupApiController : ControllerBase
         {
             return Unauthorized("User ID not found in token.");
         }
-        var createdGroup = new GroupEntity(dto.Name, dto.ImageUrl, dto.CreatedBy);
+        var createdGroup = new GroupEntity(dto.Name, dto.ImageUrl, userId?? dto.CreatedBy);
         await _unitOfWork.Group.AddAsync(createdGroup);
         await _unitOfWork.SaveChangesAsync();
         return Ok();
@@ -63,6 +66,7 @@ public class GroupApiController : ControllerBase
         }
     }
     
+    [Authorize]
     [HttpPost("{id}/delete")]
     public async Task<IActionResult> RemoveGroup(int id)
     {
@@ -79,6 +83,29 @@ public class GroupApiController : ControllerBase
             Console.WriteLine(e);
             throw;
         }
+    }
+    [Authorize]
+    [HttpPost("{groupId}/addUsers")]
+    public async Task<IActionResult> AddUsers(List<int> userIds, int groupId)
+    {
+        try
+        {
+            foreach (var userId in userIds)
+            {
+                var existingUser = await _unitOfWork.User.GetByIdAsync(userId);
+                if (existingUser == null) continue;
+                var newUser = new UserGroupEntity(userId, groupId);
+                await _unitOfWork.UserGroup.AddAsync(newUser);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+        
     }
   
 }

@@ -1,4 +1,5 @@
 ﻿using Lenden.Core.UserFeatures;
+using Lenden.Core.UserGroupFeatures;
 
 namespace Lenden.Core.GroupFeatures;
 
@@ -28,6 +29,8 @@ public class GroupEntity
     public TimeOnly CreatedTime { get; set; }
     public DateOnly UpdatedDate { get; set; }
     public TimeOnly UpdatedTime { get; set; }
+    public ICollection<UserGroupEntity> UserGroups { get; private set; } = new List<UserGroupEntity>();
+    
 
     public void UpdateTimeStamp()
     {

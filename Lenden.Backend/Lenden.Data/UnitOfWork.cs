@@ -4,6 +4,7 @@ using Lenden.Core.BalanceFeatures;
 using Lenden.Core.GroupFeatures;
 using Lenden.Core.TransactionFeatures;
 using Lenden.Core.UserFeatures;
+using Lenden.Core.UserGroupFeatures;
 using Lenden.Data.DbContexts;
 using Lenden.Data.Repositories;
 
@@ -17,6 +18,7 @@ public class UnitOfWork: IUnitOfWork
     public ITransactionRepository Transaction { get; private set; }
     
     public IBalanceRepository Balance { get; private set; }
+    public IUserGroupRepository UserGroup { get; private set;}
     public async Task SaveChangesAsync()
     {
         await  _context.SaveChangesAsync();
@@ -29,6 +31,7 @@ public class UnitOfWork: IUnitOfWork
         User = new UserRepository(_context);
         Transaction = new TransactionRepository(_context);
         Balance = new BalanceRepository(_context);
+        UserGroup = new UserGroupRepository(_context);
     }
     
 }

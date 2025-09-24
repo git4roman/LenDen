@@ -12,4 +12,14 @@ public class GroupRepository: Repository<GroupEntity>, IGroupRepository
     {
         _context = context;
     }
+
+
+    public async Task<IEnumerable<GroupEntity>?> GetGroupsByUserId(int userId)
+    {
+        var userGroups = await _context.UserGroups
+            .Where(ug => ug.UserId == userId)
+            .Select(ug => ug.Group)
+            .ToListAsync();
+        return userGroups;
+    }
 }
