@@ -1,6 +1,6 @@
-export interface GroupDto {
+export interface GroupEntity {
   createdBy: number;
-  createdByUser: any; // Or a specific type if you know it
+  createdByUser: any;
   createdDate: string;
   createdTime: string;
   id: number;
@@ -8,5 +8,5 @@ export interface GroupDto {
   name: string;
   updatedDate: string;
   updatedTime: string;
-  userGroups: any[]; // Or a specific type if you know it
+  userGroups: any[];
 }

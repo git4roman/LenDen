@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { generateImageUrl } from "@/src/utils/groups";
 import RenderGroupItems from "@/src/components/groups/RenderGroupItems";
-import { GroupDto } from "@/src/types/groups/Interfaces";
+import { GroupEntity } from "@/src/types/groups/Interfaces";
 import { AntDesign } from "@expo/vector-icons";
 
 export default function Index() {
@@ -22,7 +22,7 @@ export default function Index() {
   const [groupName, setGroupName] = useState("");
   const [createdBy, setCreatedBy] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [groups, setGroups] = useState<GroupDto[]>([]);
+  const [groups, setGroups] = useState<GroupEntity[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   const fetchUserId = async () => {

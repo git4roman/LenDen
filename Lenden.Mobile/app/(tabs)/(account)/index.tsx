@@ -34,6 +34,7 @@ const Authenticate = () => {
           pictureUrl: currentUser.photoURL || "",
         };
         await onAuthenticate(userRegisterDto);
+        console.log("User signed in: ", currentUser.email);
         router.replace("/(tabs)/(groups)");
       }
     } catch (e) {
@@ -44,6 +45,7 @@ const Authenticate = () => {
   const onSignOut = async () => {
     try {
       await signOutGoogle();
+      console.log("User signed out successfully");
     } catch (e) {
       console.error("Sign out error: ", e);
     } finally {
