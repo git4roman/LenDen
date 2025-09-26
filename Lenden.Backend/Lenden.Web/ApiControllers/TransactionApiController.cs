@@ -1,6 +1,7 @@
 ﻿using Lenden.Core;
 using Lenden.Core.BalanceFeatures;
 using Lenden.Core.TransactionFeatures;
+using Lenden.Core.UserFeatures;
 using Lenden.Data;
 using Lenden.Data.DbContexts;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,16 @@ public class TransactionApiController:ControllerBase
         _context = context;
     }
 
+
+    [HttpGet]
+    public async Task<IActionResult> GetTransactions(int groupId)
+    {
+        var existingGroup = await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
+        if (existingGroup == null) return NotFound();
+        var transactions = await _context.Transactions.Where(t=>t.GroupId == groupId).ToListAsync();    
+        return Ok(transactions);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateTransaction(int groupId, int payedByuserId, double amount)
     {
@@ -33,7 +44,10 @@ public class TransactionApiController:ControllerBase
             var createdTransaction = new TransactionEntity(groupId, payedByuserId, amount);
             await _unitOfWork.Transaction.AddAsync(createdTransaction);
             
-            int[] members = new int[] { 1, 2, 3 };
+            // int[] members = new int[] { 1, 2, 3 };
+            
+            List<UserEntity> membersObject = await _context.UserGroups.Include(ug=>ug.User).Where(ug=>ug.GroupId == groupId).Select(ug=>ug.User).ToListAsync();
+            int[] members = membersObject.Select(m=>m.Id).ToArray();
             double unitAmount = amount/members.Length;
             foreach ( int member in members)
             {
