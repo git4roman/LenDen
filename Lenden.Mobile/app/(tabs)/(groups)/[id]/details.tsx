@@ -19,37 +19,46 @@ export default function GroupDetails() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [group, setGroup] = useState<GroupEntity | null>(null);
   const [loading, setLoading] = useState(true);
+  const [balance, setBalance] = useState<{ toCollect: number; toPay: number }>({
+    toCollect: 0,
+    toPay: 0,
+  });
 
   const handleAddTransaction = () => {
     console.log("Add transaction button pressed for group ID:", id);
   };
 
   useEffect(() => {
-    const fetchTransactions = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/TransactionApi?groupId=${id}`
-        );
-        setTransactions(response.data);
-        console.log("Fetched transactions:", response.data);
+        setLoading(true);
+
+        // Fetch all data concurrently
+        const [transactionsResponse, groupResponse, balanceResponse] =
+          await Promise.all([
+            axiosInstance.get(`/TransactionApi?groupId=${id}`),
+            axiosInstance.get(`/GroupApi/${id}/get-group`),
+            axiosInstance.get(`/BalanceApi/${id}/balance/14`),
+          ]);
+
+        // Set all states
+        setTransactions(transactionsResponse.data);
+        setGroup(groupResponse.data);
+        setBalance(balanceResponse.data); // Direct assignment since API should return the correct structure
+
+        console.log("Fetched transactions:", transactionsResponse.data);
+        console.log("Fetched group:", groupResponse.data);
+        console.log("Fetched balance:", balanceResponse.data);
       } catch (error) {
-        console.error("Error fetching transactions:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchGroup = async () => {
-      try {
-        const response = await axiosInstance.get(`/GroupApi/${id}/get-group`);
-        setGroup(response.data);
-        console.log("Fetched group:", response.data);
-      } catch (error) {
-        console.error("Error fetching group:", error);
-      }
-    };
-    fetchTransactions();
-    fetchGroup();
+    if (id) {
+      fetchData();
+    }
   }, [id]);
 
   const renderTransaction = ({ item }: { item: Transaction }) => {
@@ -84,11 +93,15 @@ export default function GroupDetails() {
       <View style={styles.transactionSummary}>
         <View style={styles.transactionToCollect}>
           <Text style={{ textAlign: "center" }}>To Collect</Text>
-          <Text style={{ textAlign: "center" }}>Rs. 9000</Text>
+          <Text style={{ textAlign: "center" }}>
+            Rs. {(balance?.toCollect || 0).toLocaleString()}
+          </Text>
         </View>
         <View style={styles.transactionToPay}>
           <Text style={{ textAlign: "center" }}>To Pay</Text>
-          <Text style={{ textAlign: "center" }}>Rs. 5000</Text>
+          <Text style={{ textAlign: "center" }}>
+            Rs. {(balance?.toPay || 0).toLocaleString()}
+          </Text>
         </View>
       </View>
     </View>

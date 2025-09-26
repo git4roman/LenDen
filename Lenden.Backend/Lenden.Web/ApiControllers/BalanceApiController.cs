@@ -53,7 +53,7 @@ public class BalanceApiController: ControllerBase
             }
         }
         
-        return Ok(new { tocollect = toCollect, toPay = toPay });
+        return Ok(new { toCollect = toCollect, toPay = toPay });
 
     }
 
