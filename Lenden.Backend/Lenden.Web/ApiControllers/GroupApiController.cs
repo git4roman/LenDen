@@ -54,6 +54,13 @@ public class GroupApiController : ControllerBase
             await _unitOfWork.UserGroup.AddAsync(newUser);
         
     }
+
+    [HttpGet("{id}/get-group")]
+    public async Task<IActionResult> GetGroupByIdAsync(int id)
+    {
+        var group = await _unitOfWork.Group.GetByIdAsync(id);
+        return  Ok(group);
+    }
     
     [Authorize]
     [HttpPut("{id}/update")]
