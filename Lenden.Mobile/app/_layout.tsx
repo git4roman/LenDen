@@ -1,5 +1,12 @@
-import { Stack } from "expo-router";
+// app/_layout.tsx
+import { Provider } from "react-redux";
+import { Slot } from "expo-router";
+import { store } from "@/src/store/store";
 
 export default function RootLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Provider store={store}>
+      <Slot />
+    </Provider>
+  );
 }

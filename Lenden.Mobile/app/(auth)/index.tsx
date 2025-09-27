@@ -9,14 +9,26 @@ import {
 import { loginStyles as styles } from "@/src/styles";
 import { UserRegisterDto } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
+import { router } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState, fetchUserFromAuth } from "../../src/store";
+import { fetchMe, logout } from "@/src/store/authSlice";
 
-const Login = () => {
-  const [user, setUser] = useState<null | any>(null);
+const Authenticate = () => {
+  const user = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const checkUser = async () => {
       const token = await SecureStore.getItemAsync("userToken");
-      setUser(!!token);
+      if (token) {
+        try {
+          await dispatch(fetchMe()).unwrap();
+          await dispatch(fetchUserFromAuth());
+        } catch {
+          await SecureStore.deleteItemAsync("userToken");
+        }
+      }
     };
     checkUser();
   }, []);
@@ -25,7 +37,6 @@ const Login = () => {
     try {
       const currentUser = await signInWithGoogle();
       if (currentUser) {
-        setUser(true);
         const userRegisterDto: UserRegisterDto = {
           email: currentUser.email,
           fullName: currentUser.displayName || "",
@@ -33,27 +44,29 @@ const Login = () => {
           pictureUrl: currentUser.photoURL || "",
         };
         await onAuthenticate(userRegisterDto);
+        await dispatch(fetchMe()).unwrap();
+        await dispatch(fetchUserFromAuth());
+        router.replace("/(tabs)/(groups)");
       }
     } catch (e) {
-      console.error("Google sign-in error: ", e);
+      console.error("Google sign-in error:", e);
     }
   };
 
   const onSignOut = async () => {
     try {
       await signOutGoogle();
-    } catch (e) {
-      console.error("Sign out error: ", e);
-    } finally {
       await SecureStore.deleteItemAsync("userToken");
-      setUser(null);
+      dispatch(logout());
+    } catch (e) {
+      console.error("Sign out error:", e);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to LenDen</Text>
-      {user ? (
+      {user.userId ? (
         <TouchableOpacity style={styles.button} onPress={onSignOut}>
           <Text style={styles.buttonText}>Sign Out</Text>
         </TouchableOpacity>
@@ -64,4 +77,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Authenticate;

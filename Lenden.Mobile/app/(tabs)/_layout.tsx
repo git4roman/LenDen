@@ -12,6 +12,7 @@ export default function _layout() {
         tabBarLabelStyle: { fontSize: 12 },
         headerShown: false,
       }}
+      initialRouteName="(groups)"
     >
       <Tabs.Screen
         name="(groups)"

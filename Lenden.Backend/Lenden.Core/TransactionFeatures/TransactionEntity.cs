@@ -1,4 +1,5 @@
 ﻿using Lenden.Core.GroupFeatures;
+using Lenden.Core.UserFeatures;
 
 namespace Lenden.Core.TransactionFeatures;
 
@@ -21,6 +22,7 @@ public class TransactionEntity
     public int Id { get; set; }
     public int GroupId { get; set; }
     public int PaidByUserId { get; set; }
+    public UserEntity PaidByUser { get; set; }
     public double Amount { get; set; }
     public DateOnly PaidOnDate { get; set; }
     public TimeOnly PaidOnTime { get; set; }

@@ -13,6 +13,8 @@ import { axiosInstance } from "@/src/services";
 import { Transaction } from "@/src/types/TransactionEntity";
 import { styles } from "@/src/styles/groupDetailsStyles";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
+import { useSelector } from "react-redux";
+import { RootState, AppDispatch } from "@/src/store/store";
 
 export default function GroupDetails() {
   const { id } = useLocalSearchParams();
@@ -23,6 +25,7 @@ export default function GroupDetails() {
     toCollect: 0,
     toPay: 0,
   });
+  const auth = useSelector((state: RootState) => state.auth);
 
   const handleAddTransaction = () => {
     console.log("Add transaction button pressed for group ID:", id);
@@ -33,22 +36,16 @@ export default function GroupDetails() {
       try {
         setLoading(true);
 
-        // Fetch all data concurrently
         const [transactionsResponse, groupResponse, balanceResponse] =
           await Promise.all([
             axiosInstance.get(`/TransactionApi?groupId=${id}`),
             axiosInstance.get(`/GroupApi/${id}/get-group`),
-            axiosInstance.get(`/BalanceApi/${id}/balance/14`),
+            axiosInstance.get(`/BalanceApi/${id}/balance/${auth.userId}`),
           ]);
 
-        // Set all states
         setTransactions(transactionsResponse.data);
         setGroup(groupResponse.data);
-        setBalance(balanceResponse.data); // Direct assignment since API should return the correct structure
-
-        console.log("Fetched transactions:", transactionsResponse.data);
-        console.log("Fetched group:", groupResponse.data);
-        console.log("Fetched balance:", balanceResponse.data);
+        setBalance(balanceResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -75,9 +72,9 @@ export default function GroupDetails() {
           <Text style={styles.transactionDay}>{dayStr}</Text>
           <View style={styles.transactionDetails}>
             <Text style={styles.transactionDescription}>Transaction</Text>
-            <Text
-              style={styles.transactionPaidBy}
-            >{`You paid ${item.amount.toLocaleString()}`}</Text>
+            <Text style={styles.transactionPaidBy}>{`${
+              item.paidByUser.givenName
+            } paid ${item.amount.toLocaleString()}`}</Text>
           </View>
           <Text style={styles.transactionAmount}>
             Rs. {item.amount.toLocaleString()}

@@ -16,35 +16,19 @@ import { generateImageUrl } from "@/src/utils/groups";
 import RenderGroupItems from "@/src/components/groups/RenderGroupItems";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
 import { AntDesign } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../src/store";
 
 export default function Index() {
-  const router = useRouter();
   const [groupName, setGroupName] = useState("");
-  const [createdBy, setCreatedBy] = useState<string | null>(null);
+  const [createdBy, setCreatedBy] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState<GroupEntity[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const fetchUserId = async () => {
-    try {
-      const response = await axiosInstance.get(
-        "http://lenden-backend.runasp.net/api/AuthApi/me"
-      );
-      if (response.data?.userId) {
-        setCreatedBy(response.data.userId);
-        fetchGroups();
-      } else {
-        Alert.alert("Error", "User ID not found. Please log in again.");
-        router.push("/login");
-      }
-    } catch (error) {
-      console.error("Failed to fetch user ID:", error);
-      Alert.alert("Authentication Failed", "Redirecting to login.");
-      router.push("/login");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const router = useRouter();
+
+  const auth = useSelector((state: RootState) => state.auth);  
 
   const fetchGroups = async () => {
     try {
@@ -56,7 +40,7 @@ export default function Index() {
   };
 
   useEffect(() => {
-    fetchUserId();
+    // fetchUserId();
     fetchGroups();
   }, []);
 
@@ -72,10 +56,6 @@ export default function Index() {
         createdBy,
         imageUrl,
       });
-
-      // refresh after server responds
-      await fetchGroups();
-
       setGroupName("");
       setModalVisible(false);
       Alert.alert("Success", "Group created successfully!");

@@ -27,7 +27,7 @@ public class TransactionApiController:ControllerBase
     {
         var existingGroup = await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
         if (existingGroup == null) return NotFound();
-        var transactions = await _context.Transactions.Where(t=>t.GroupId == groupId).ToListAsync();    
+        var transactions = await _context.Transactions.Include(t=>t.PaidByUser).Where(t=>t.GroupId == groupId).ToListAsync();    
         return Ok(transactions);
     }
 

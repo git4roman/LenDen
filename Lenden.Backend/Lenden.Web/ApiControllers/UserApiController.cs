@@ -14,6 +14,20 @@ public class UserApiController: ControllerBase
         _unitOfWork = unitOfWork;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await _unitOfWork.User.GetAllAsync();
+        return Ok(users);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserById(int id)
+    {
+        var user  = await _unitOfWork.User.GetByIdAsync(id);
+        return Ok(user);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateUser(string email, string fullName,string googleId,string pictureUrl)
     {
