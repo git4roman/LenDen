@@ -21,14 +21,14 @@ import { RootState } from "../../../src/store";
 
 export default function Index() {
   const [groupName, setGroupName] = useState("");
-  const [createdBy, setCreatedBy] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState<GroupEntity[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   const router = useRouter();
 
-  const auth = useSelector((state: RootState) => state.auth);  
+  const auth = useSelector((state: RootState) => state.auth);
+  const userId = useSelector((state: RootState) => state.auth.userId);
 
   const fetchGroups = async () => {
     try {
@@ -40,7 +40,6 @@ export default function Index() {
   };
 
   useEffect(() => {
-    // fetchUserId();
     fetchGroups();
   }, []);
 
@@ -53,15 +52,19 @@ export default function Index() {
       const imageUrl = generateImageUrl(groupName);
       await axiosInstance.post("/GroupApi/create", {
         name: groupName,
-        createdBy,
+        userId,
         imageUrl,
       });
       setGroupName("");
       setModalVisible(false);
+      fetchGroups();
       Alert.alert("Success", "Group created successfully!");
     } catch (error) {
       console.error("Error creating group:", error);
-      Alert.alert("Error", "Failed to create group. Please try again.");
+      Alert.alert(
+        "Error",
+        `Failed to create group. Please try again. ${error}`
+      );
     }
   };
 

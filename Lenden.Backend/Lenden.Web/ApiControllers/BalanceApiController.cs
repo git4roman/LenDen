@@ -26,7 +26,7 @@ public class BalanceApiController: ControllerBase
         double toCollect=0;
         double toPay = 0;
         
-        var balances = await _context.Balances.Where(u=>u.OwnerId == userId || u.GroupId == groupId).ToListAsync();
+        var balances = await _context.Balances.Where(u=>(u.OwnerId == userId || u.OwedById == userId) && u.GroupId == groupId).ToListAsync();
         foreach (var balance in balances)
         {
             if (balance.OwnerId == userId)

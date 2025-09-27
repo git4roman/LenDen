@@ -66,13 +66,8 @@ const Authenticate = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to LenDen</Text>
-      {user.userId ? (
-        <TouchableOpacity style={styles.button} onPress={onSignOut}>
-          <Text style={styles.buttonText}>Sign Out</Text>
-        </TouchableOpacity>
-      ) : (
-        <GoogleSigninButton onPress={onGoogleButtonPress} />
-      )}
+
+      <GoogleSigninButton onPress={onGoogleButtonPress} />
     </View>
   );
 };

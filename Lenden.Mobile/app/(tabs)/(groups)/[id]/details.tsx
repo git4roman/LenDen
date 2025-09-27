@@ -46,6 +46,7 @@ export default function GroupDetails() {
         setTransactions(transactionsResponse.data);
         setGroup(groupResponse.data);
         setBalance(balanceResponse.data);
+        console.log(balanceResponse.data, "balance data");
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
