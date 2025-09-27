@@ -1,5 +1,7 @@
 ﻿using Lenden.Core;
+using Lenden.Core.Utilities;
 using Lenden.Data.DbContexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,20 +13,26 @@ public class BalanceApiController: ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly AppDbContext _context;
-    public BalanceApiController(IUnitOfWork unitOfWork, AppDbContext context)
+    private readonly CurrentUserHelper _currentUserHelper;
+    public BalanceApiController(IUnitOfWork unitOfWork, AppDbContext context, CurrentUserHelper currentUserHelper)
     {
         _unitOfWork = unitOfWork;
         _context = context;
+        _currentUserHelper = currentUserHelper;
     }
 
-    [HttpGet("{groupId}/balance/{userId}")]
-    public async Task<IActionResult> GetBalanceSummary(int groupId, int userId)
+    [Authorize]
+    [HttpGet("{groupId}/balance")]
+    public async Task<IActionResult> GetBalanceSummary(int groupId)
     {
         var group = await _unitOfWork.Group.GetByIdAsync(groupId);
         if (group == null) return NotFound();
         // var members = await _context.UserGroups.Include(u=> u.User).Where(u => u.GroupId == groupId).ToListAsync();
         double toCollect=0;
         double toPay = 0;
+        
+        var userIdUnextracted = _currentUserHelper.GetUserId();
+        var userId = userIdUnextracted.Value;
         
         var balances = await _context.Balances.Where(u=>(u.OwnerId == userId || u.OwedById == userId) && u.GroupId == groupId).ToListAsync();
         foreach (var balance in balances)
@@ -57,11 +65,15 @@ public class BalanceApiController: ControllerBase
 
     }
 
-    [HttpGet("{groupId}/mutual-balance/{userId}/")]
-    public async Task<IActionResult> GetMutualBalance(int groupId, int userId)
+    [Authorize]
+    [HttpGet("{groupId}/mutual-balance")]
+    public async Task<IActionResult> GetMutualBalance(int groupId)
     {
         var group = await _unitOfWork.Group.GetByIdAsync(groupId);  
         if (group == null) return NotFound();
+        var userIdUnextracted = _currentUserHelper.GetUserId();
+        var userId = userIdUnextracted.Value;
+
         
         var balances = await _context.Balances.Where(u=>u.OwnerId == userId || u.GroupId == groupId).ToListAsync();
         var report = balances

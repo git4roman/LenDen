@@ -1,11 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Pressable,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { View, Pressable, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
@@ -14,7 +7,9 @@ import { Transaction } from "@/src/types/TransactionEntity";
 import { styles } from "@/src/styles/groupDetailsStyles";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
 import { useSelector } from "react-redux";
-import { RootState, AppDispatch } from "@/src/store/store";
+import { RootState } from "@/src/store/store";
+import { GroupHeader } from "@/src/components/groups/GroupHeader";
+import { TransactionList } from "@/src/components/groups/TransactionList";
 
 export default function GroupDetails() {
   const { id } = useLocalSearchParams();
@@ -25,6 +20,9 @@ export default function GroupDetails() {
     toCollect: 0,
     toPay: 0,
   });
+  const [mutualBalance, setMutualBalance] = useState<
+    { amount: number; fromUser: number; toUser: number }[]
+  >([]);
   const auth = useSelector((state: RootState) => state.auth);
 
   const handleAddTransaction = () => {
@@ -36,17 +34,22 @@ export default function GroupDetails() {
       try {
         setLoading(true);
 
-        const [transactionsResponse, groupResponse, balanceResponse] =
-          await Promise.all([
-            axiosInstance.get(`/TransactionApi?groupId=${id}`),
-            axiosInstance.get(`/GroupApi/${id}/get-group`),
-            axiosInstance.get(`/BalanceApi/${id}/balance/${auth.userId}`),
-          ]);
+        const [
+          transactionsResponse,
+          groupResponse,
+          balanceResponse,
+          mutualBalanceResponse,
+        ] = await Promise.all([
+          axiosInstance.get(`/TransactionApi?groupId=${id}`),
+          axiosInstance.get(`/GroupApi/${id}/get-group`),
+          axiosInstance.get(`/BalanceApi/${id}/balance`),
+          axiosInstance.get(`/BalanceApi/${id}/mutual-balance`),
+        ]);
 
         setTransactions(transactionsResponse.data);
         setGroup(groupResponse.data);
         setBalance(balanceResponse.data);
-        console.log(balanceResponse.data, "balance data");
+        setMutualBalance(mutualBalanceResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -59,52 +62,6 @@ export default function GroupDetails() {
     }
   }, [id]);
 
-  const renderTransaction = ({ item }: { item: Transaction }) => {
-    const paidOn = new Date(`${item.paidOnDate}T${item.paidOnTime}`);
-    const dateStr = paidOn
-      .toLocaleDateString("en-US", { month: "short", year: "numeric" })
-      .toUpperCase();
-    const dayStr = paidOn.getDate().toString();
-
-    return (
-      <View style={styles.transactionItem}>
-        <Text style={styles.transactionDate}>{dateStr}</Text>
-        <View style={styles.transactionRow}>
-          <Text style={styles.transactionDay}>{dayStr}</Text>
-          <View style={styles.transactionDetails}>
-            <Text style={styles.transactionDescription}>Transaction</Text>
-            <Text style={styles.transactionPaidBy}>{`${
-              item.paidByUser.givenName
-            } paid ${item.amount.toLocaleString()}`}</Text>
-          </View>
-          <Text style={styles.transactionAmount}>
-            Rs. {item.amount.toLocaleString()}
-          </Text>
-        </View>
-      </View>
-    );
-  };
-
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <Text style={styles.groupName}>{group ? group.name : "Loading..."}</Text>
-      <View style={styles.transactionSummary}>
-        <View style={styles.transactionToCollect}>
-          <Text style={{ textAlign: "center" }}>To Collect</Text>
-          <Text style={{ textAlign: "center" }}>
-            Rs. {(balance?.toCollect || 0).toLocaleString()}
-          </Text>
-        </View>
-        <View style={styles.transactionToPay}>
-          <Text style={{ textAlign: "center" }}>To Pay</Text>
-          <Text style={{ textAlign: "center" }}>
-            Rs. {(balance?.toPay || 0).toLocaleString()}
-          </Text>
-        </View>
-      </View>
-    </View>
-  );
-
   if (loading) {
     return (
       <View style={styles.container}>
@@ -116,13 +73,16 @@ export default function GroupDetails() {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: `Group Details` }} />
-      {renderHeader()}
-      <FlatList
-        data={transactions}
-        renderItem={renderTransaction}
-        keyExtractor={(item) => item.id.toString()}
-        style={styles.content}
+
+      <GroupHeader
+        group={group}
+        balance={balance}
+        mutualBalance={mutualBalance}
+        currentUserId={auth.userId}
       />
+
+      <TransactionList transactions={transactions} />
+
       <Pressable style={styles.floatingButton} onPress={handleAddTransaction}>
         <AntDesign name="plus-circle" size={56} color="#007BFF" />
       </Pressable>
