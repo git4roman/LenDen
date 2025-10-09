@@ -2,8 +2,10 @@
 using Lenden.Core.GroupFeatures;
 using Lenden.Core.UserGroupFeatures;
 using Lenden.Core.Utilities;
+using Lenden.Data.DbContexts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lenden.Web.ApiControllers;
 
@@ -13,11 +15,13 @@ public class GroupApiController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly CurrentUserHelper  _currentUserHelper;
+    private readonly AppDbContext _context;
 
-    public GroupApiController(IUnitOfWork unitOfWork,CurrentUserHelper currentUserHelper)
+    public GroupApiController(IUnitOfWork unitOfWork,CurrentUserHelper currentUserHelper,AppDbContext context)
     {
         _unitOfWork = unitOfWork;
         _currentUserHelper = currentUserHelper;
+        _context = context;
     }
     [Authorize]
     [HttpGet]
@@ -123,6 +127,16 @@ public class GroupApiController : ControllerBase
             throw new Exception(e.Message);
         }
         
+    }
+
+    [HttpGet("{groupId}/members")]
+    public async Task<IActionResult> GetGroupMembers(int groupId)
+    {
+        var group = await _unitOfWork.Group.GetByIdAsync(groupId);
+        if (group == null) return NotFound();
+        var groupMembers =
+            await _context.UserGroups.Include(u=>u.User).Where(u => u.GroupId == groupId).Select(u => u.User).ToListAsync();
+        return Ok(groupMembers);
     }
   
 }
