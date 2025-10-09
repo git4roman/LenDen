@@ -1,6 +1,6 @@
 import { View, Pressable, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useRouter, Stack, useLocalSearchParams } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import { axiosInstance } from "@/src/services";
 import { Transaction } from "@/src/types/TransactionEntity";
@@ -12,6 +12,7 @@ import { GroupHeader } from "@/src/components/groups/GroupHeader";
 import { TransactionList } from "@/src/components/groups/TransactionList";
 
 export default function GroupDetails() {
+  const router = useRouter();
   const { id } = useLocalSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [group, setGroup] = useState<GroupEntity | null>(null);
@@ -26,7 +27,10 @@ export default function GroupDetails() {
   const auth = useSelector((state: RootState) => state.auth);
 
   const handleAddTransaction = () => {
-    console.log("Add transaction button pressed for group ID:", id);
+    router.push({
+      pathname: `/(tabs)/(groups)/[id]/transaction`,
+      params: { id: id },
+    });
   };
 
   useEffect(() => {
