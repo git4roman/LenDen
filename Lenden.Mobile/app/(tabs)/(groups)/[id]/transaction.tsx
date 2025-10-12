@@ -11,16 +11,16 @@ import { useLocalSearchParams } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import { axiosInstance } from "@/src/services";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
-import axios from "axios";
+import PrimaryButton from "@/src/components/PrimaryButton";
+import { Colors } from "@/src/theme/colors";
 
-// Define the User interface for type safety
+// Define the User interface
 interface User {
   id: number;
   fullName: string;
 }
 
 export default function Transaction() {
-  // Use 'id' to match the dynamic route parameter
   const { id } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState<User[]>([]);
@@ -29,59 +29,90 @@ export default function Transaction() {
   const [group, setGroup] = useState<GroupEntity | null>(null);
 
   useEffect(() => {
-    // Check if the id is available before fetching
-    const fetchGroup = async () => {
-      const response = await axiosInstance(`/GroupApi/${group?.id}`);
-      setGroup(response.data);
-    };
-    if (id) {
-      const fetchMembers = async () => {
-        try {
-          setLoading(true);
-          console.log("The group Id:", id);
-          const response = await axiosInstance.get(`/GroupApi/${id}/members`);
-          setMembers(response.data);
-          console.log(response.data);
+    if (!id) return;
 
-          // Set the first member as the default payer
-          if (response.data.length > 0) {
-            setPayerId(response.data[0].id);
-          }
-        } catch (error) {
-          console.error("Error fetching group members:", error);
-          Alert.alert("Error", "Failed to load group members.");
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchMembers();
-      fetchGroup();
-    }
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // ✅ Fetch all groups, then pick the one matching this ID
+        const groupResponse = await axiosInstance.get("/GroupApi");
+        const foundGroup = groupResponse.data.find(
+          (g: GroupEntity) => g.id == Number(id)
+        );
+        setGroup(foundGroup || null);
+
+        // ✅ Fetch members of this group
+        const membersResponse = await axiosInstance.get(
+          `/GroupApi/${id}/members`
+        );
+        setMembers(membersResponse.data);
+
+        // Set default payer if available
+        if (membersResponse.data.length > 0)
+          setPayerId(membersResponse.data[0].id);
+      } catch (error: any) {
+        console.error("Fetch error:", error.response?.status, error.message);
+        Alert.alert("Error", "Failed to load group data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [id]);
 
+  // ✅ Add Transaction handler
   const handleAddTransaction = async () => {
-    await axiosInstance.post("/TransactionApi", {
-      groupId: id,
-      amount: paymentAmount,
-      payedByuserId: payerId,
-    });
-    setPaymentAmount("");
+    if (!paymentAmount || !payerId) {
+      Alert.alert("Error", "Please fill all fields.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axiosInstance.post("/TransactionApi", {
+        groupId: Number(id),
+        payedByUserId: payerId,
+        amount: Number(paymentAmount),
+      });
+
+      Alert.alert("Success", "Transaction added successfully.");
+      setPaymentAmount("");
+    } catch (error: any) {
+      console.error(
+        "Transaction error:",
+        error.response?.status,
+        error.message
+      );
+      Alert.alert("Error", "Failed to add transaction.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // ✅ Loading indicator
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading members...</Text>
+        <Text>Loading...</Text>
       </View>
     );
   }
 
+  // ✅ Main view
   return (
     <View style={{ padding: 20 }}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
         New Transaction for Group ID: {id}
       </Text>
+
+      {group && (
+        <Text style={{ marginBottom: 15, fontSize: 16 }}>
+          Group: {group.name}
+        </Text>
+      )}
 
       {/* Payment Amount Input */}
       <View style={{ marginBottom: 20 }}>
@@ -100,8 +131,8 @@ export default function Transaction() {
         />
       </View>
 
-      {/* "Who Paid" Dropdown */}
-      <View>
+      {/* Who Paid Dropdown */}
+      <View style={{ marginBottom: 20 }}>
         <Text style={{ fontSize: 16, marginBottom: 5 }}>Who Paid?</Text>
         <View
           style={{
@@ -113,6 +144,9 @@ export default function Transaction() {
           <Picker
             selectedValue={payerId}
             onValueChange={(itemValue) => setPayerId(itemValue)}
+            style={{
+              color: Colors.textSecondary, // Text color for the selected item
+            }}
           >
             {members.map((member) => (
               <Picker.Item
@@ -124,17 +158,8 @@ export default function Transaction() {
           </Picker>
         </View>
       </View>
-      <Pressable onPress={()=>handleAddTransaction}>
-        <Text
-          style={{
-            padding: 10,
-            backgroundColor: "rgb(28, 150, 197)",
-            textAlign: "center",
-          }}
-        >
-          Add Transaction
-        </Text>
-      </Pressable>
+
+      <PrimaryButton title="Add Transaction" onPress={handleAddTransaction} />
     </View>
   );
 }

@@ -37,25 +37,36 @@ export default function GroupDetails() {
     const fetchData = async () => {
       try {
         setLoading(true);
-
         const [
           transactionsResponse,
           groupResponse,
           balanceResponse,
           mutualBalanceResponse,
         ] = await Promise.all([
-          axiosInstance.get(`/TransactionApi?groupId=${id}`),
-          axiosInstance.get(`/GroupApi/${id}/get-group`),
-          axiosInstance.get(`/BalanceApi/${id}/balance`),
-          axiosInstance.get(`/BalanceApi/${id}/mutual-balance`),
+          axiosInstance.get(`/TransactionApi?groupId=${id}`).catch((err) => {
+            console.error("Error fetching transactions:", err);
+            throw { source: "transactions", error: err };
+          }),
+          axiosInstance.get(`/GroupApi/${id}/get-group`).catch((err) => {
+            console.error("Error fetching group:", err);
+            throw { source: "group", error: err };
+          }),
+          axiosInstance.get(`/BalanceApi/${id}/balance`).catch((err) => {
+            console.error("Error fetching balance:", err);
+            throw { source: "balance", error: err };
+          }),
+          axiosInstance.get(`/BalanceApi/${id}/mutual-balance`).catch((err) => {
+            console.error("Error fetching mutual balance:", err);
+            throw { source: "mutualBalance", error: err };
+          }),
         ]);
-
         setTransactions(transactionsResponse.data);
         setGroup(groupResponse.data);
         setBalance(balanceResponse.data);
         setMutualBalance(mutualBalanceResponse.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data from Group Details:", error);
+        // You can now access error.source to know which API failed
       } finally {
         setLoading(false);
       }

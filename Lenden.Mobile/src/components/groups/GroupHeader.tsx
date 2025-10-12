@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { styles } from "@/src/styles/GroupHeaderStyles";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
+import PrimaryButton from "../PrimaryButton";
 
 interface GroupHeaderProps {
   group: GroupEntity | null;
@@ -21,6 +22,10 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
   if (total === 0) {
     return (
       <View style={styles.header}>
+        <PrimaryButton
+          title="Add Members"
+          onPress={() => console.log("Clicked")}
+        />
         <Text style={styles.groupName}>{group?.name || "Loading..."}</Text>
       </View>
     );
@@ -31,6 +36,8 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
 
   return (
     <View style={styles.header}>
+      <PrimaryButton title="Add Members" onPress={() => {}} />
+
       <Text style={styles.groupName}>{group?.name || "Loading..."}</Text>
 
       <View style={styles.balanceRow}>

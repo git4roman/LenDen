@@ -32,46 +32,46 @@ public class TransactionApiController:ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTransaction(int groupId, int payedByuserId, double amount)
+    public async Task<IActionResult> CreateTransaction(CreateTransactionModel  model)
     {
         try
         {
-            var existingGroupId = await _unitOfWork.Group.GetByIdAsync(groupId);
+            var existingGroupId = await _unitOfWork.Group.GetByIdAsync(model.GroupId);
             if (existingGroupId == null) return NotFound("Group not found");
-            var existingUser = await _unitOfWork.User.GetByIdAsync(payedByuserId);
-            if (payedByuserId == null) return NotFound("Payed By user not found");
+            var existingUser = await _unitOfWork.User.GetByIdAsync(model.PayedByUserId);
+            if (model.PayedByUserId == null) return NotFound("Payed By user not found");
 
-            var createdTransaction = new TransactionEntity(groupId, payedByuserId, amount);
+            var createdTransaction = new TransactionEntity(model.GroupId, model.PayedByUserId, model.Amount);
             await _unitOfWork.Transaction.AddAsync(createdTransaction);
             
             // int[] members = new int[] { 1, 2, 3 };
             
-            List<UserEntity> membersObject = await _context.UserGroups.Include(ug=>ug.User).Where(ug=>ug.GroupId == groupId).Select(ug=>ug.User).ToListAsync();
+            List<UserEntity> membersObject = await _context.UserGroups.Include(ug=>ug.User).Where(ug=>ug.GroupId == model.GroupId).Select(ug=>ug.User).ToListAsync();
             int[] members = membersObject.Select(m=>m.Id).ToArray();
-            double unitAmount = amount/members.Length;
+            double unitAmount = model.Amount/members.Length;
             foreach ( int member in members)
             {
-                if (member == payedByuserId)
+                if (member == model.PayedByUserId)
                 {
                     continue;
                 }
-                int ownerId = Math.Min(payedByuserId, member);
-                int owedById = Math.Max(payedByuserId, member);
+                int ownerId = Math.Min(model.PayedByUserId, member);
+                int owedById = Math.Max(model.PayedByUserId, member);
                 
                 var balance =await _context.Balances.FirstOrDefaultAsync(b => 
-                    b.GroupId == groupId && 
+                    b.GroupId == model.GroupId && 
                     b.OwnerId == ownerId && 
                     b.OwedById == owedById);
 
                 if (balance == null)
                 {
-                    var newBalance = new BalanceEntity(groupId, ownerId,owedById, unitAmount);
+                    var newBalance = new BalanceEntity(model.GroupId, ownerId,owedById, unitAmount);
                     await _unitOfWork.Balance.AddAsync(newBalance);
                     
                 }
                 else
                 {
-                    if (payedByuserId == ownerId)
+                    if (model.PayedByUserId == ownerId)
                     {
                         balance.Amount += unitAmount;
                     }
@@ -91,5 +91,12 @@ public class TransactionApiController:ControllerBase
             throw;
         }
 
+    }
+    
+    public class CreateTransactionModel
+    {
+        public int GroupId { get; set; }
+        public int PayedByUserId { get; set; }
+        public double Amount { get; set; }
     }
 }
