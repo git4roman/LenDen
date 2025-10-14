@@ -75,7 +75,7 @@ public class BalanceApiController: ControllerBase
         var userId = userIdUnextracted.Value;
 
         
-        var balances = await _context.Balances.Where(u=>u.OwnerId == userId || u.GroupId == groupId).ToListAsync();
+        var balances = await _context.Balances.Where(u=> (u.OwnerId == userId || u.OwedById ==userId) && u.GroupId == groupId).ToListAsync();
         var report = balances
             .Select(b => new
             {

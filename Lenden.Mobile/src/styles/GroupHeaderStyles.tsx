@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { Colors } from "../theme/colors";
 
 export const styles = StyleSheet.create({
   // Container styles (shared/main container)
@@ -10,14 +11,21 @@ export const styles = StyleSheet.create({
 
   // Header styles
   header: {
-    height: 200,
-    marginBottom: 10,
+    // height: 180,
+    marginBottom: 0,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    marginBottom: 16,
   },
   groupName: {
     fontSize: 24,
-    color: "#fff",
-    textAlign: "center",
+    color: Colors.primary,
     fontWeight: "bold",
+    flex: 1, // Takes available space
   },
 
   // Reusable text styles
@@ -66,16 +74,16 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
   },
   collectColor: {
-    backgroundColor: "#2a9d8f",
+    backgroundColor: Colors.success,
   },
   payColor: {
-    backgroundColor: "#e63946",
+    backgroundColor: Colors.danger,
   },
   collectTextColor: {
-    color: "#2a9d8f",
+    color: Colors.success,
   },
   payTextColor: {
-    color: "#e63946",
+    color: Colors.danger,
   },
   marginRight5: {
     marginRight: 5,
@@ -98,5 +106,21 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+
+    gap: 6,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

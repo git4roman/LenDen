@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { styles } from "@/src/styles/GroupHeaderStyles";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
-import PrimaryButton from "../PrimaryButton";
+// import PrimaryButton from "../PrimaryButton";
+import axiosInstance from "@/src/services/axios";
+import { useRouter } from "expo-router";
+import { AntDesign } from "@expo/vector-icons";
 
 interface GroupHeaderProps {
   group: GroupEntity | null;
@@ -17,28 +20,38 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
   mutualBalance,
   currentUserId,
 }) => {
-  const total = (balance?.toCollect || 0) + (balance?.toPay || 0);
+  const router = useRouter();
 
-  if (total === 0) {
-    return (
-      <View style={styles.header}>
-        <PrimaryButton
-          title="Add Members"
-          onPress={() => console.log("Clicked")}
-        />
-        <Text style={styles.groupName}>{group?.name || "Loading..."}</Text>
-      </View>
-    );
-  }
+  const handleAddMembers = async () => {
+    router.push({
+      pathname: `/[groupId]/addMembers`,
+      params: { groupId: group?.id as number },
+    });
+  };
+
+  const total = (balance?.toCollect || 0) + (balance?.toPay || 0); 
 
   const collectRatio = balance?.toCollect ? balance.toCollect / total : 0;
   const payRatio = balance?.toPay ? balance.toPay / total : 0;
 
   return (
     <View style={styles.header}>
-      <PrimaryButton title="Add Members" onPress={() => {}} />
-
-      <Text style={styles.groupName}>{group?.name || "Loading..."}</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.groupName}>{group?.name || "Loading..."}</Text>
+        <Pressable style={styles.addButton} onPress={handleAddMembers}>
+          {total === 0 ? (
+            <>
+              <AntDesign name="plus" size={18} color="#fff" />
+              <Text style={styles.addButtonText}>Add Members</Text>
+            </>
+          ) : (
+            <>
+              <AntDesign name="plus" size={18} color="#fff" />
+              <Text style={styles.addButtonText}>Add Members</Text>
+            </>
+          )}
+        </Pressable>
+      </View>
 
       <View style={styles.balanceRow}>
         {balance?.toCollect > 0 && (
@@ -69,7 +82,6 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
         )}
       </View>
 
-      {/* Mutual balances block */}
       <View style={styles.mutualBalanceContainer}>
         {mutualBalance.map((m, idx) => {
           if (m.fromUser === currentUserId) {

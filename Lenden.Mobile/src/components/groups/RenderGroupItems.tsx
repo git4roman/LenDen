@@ -1,9 +1,18 @@
 // components/groups/RenderGroupItems.tsx
 import React from "react";
-import { Image, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Image,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import { Card } from "@ant-design/react-native";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
 import { useRouter } from "expo-router";
+import { AntDesign } from "@expo/vector-icons";
+import { Colors } from "@/src/theme/colors";
 
 interface Props {
   item: GroupEntity;
@@ -17,8 +26,8 @@ export default function RenderGroupItems({ item }: Props) {
       activeOpacity={0.7}
       onPress={() =>
         router.push({
-          pathname: "/(tabs)/(groups)/[id]/details",
-          params: { id: item.id },
+          pathname: "/(tabs)/(groups)/[groupId]/details",
+          params: { groupId: item.id },
         })
       }
     >
@@ -28,10 +37,10 @@ export default function RenderGroupItems({ item }: Props) {
             <Image source={{ uri: item.imageUrl }} style={styles.image} />
             <View style={styles.textContainer}>
               <Text style={styles.name}>{item.name}</Text>
-              {/* {item.description ? (
-                <Text style={styles.description}>{item.description}</Text>
-              ) : null} */}
             </View>
+            <Pressable onPress={() => {}}>
+              <AntDesign name="delete" size={20} color={Colors.danger} />
+            </Pressable>
           </View>
         </Card.Body>
       </Card>
@@ -53,6 +62,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 12,
   },
   image: {
     width: 60,

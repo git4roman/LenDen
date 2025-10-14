@@ -21,7 +21,7 @@ interface User {
 }
 
 export default function Transaction() {
-  const { id } = useLocalSearchParams();
+  const { groupId } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState<User[]>([]);
   const [paymentAmount, setPaymentAmount] = useState("");
@@ -29,7 +29,7 @@ export default function Transaction() {
   const [group, setGroup] = useState<GroupEntity | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!groupId) return;
 
     const fetchData = async () => {
       try {
@@ -38,13 +38,13 @@ export default function Transaction() {
         // ✅ Fetch all groups, then pick the one matching this ID
         const groupResponse = await axiosInstance.get("/GroupApi");
         const foundGroup = groupResponse.data.find(
-          (g: GroupEntity) => g.id == Number(id)
+          (g: GroupEntity) => g.id == Number(groupId)
         );
         setGroup(foundGroup || null);
 
         // ✅ Fetch members of this group
         const membersResponse = await axiosInstance.get(
-          `/GroupApi/${id}/members`
+          `/GroupApi/${groupId}/members`
         );
         setMembers(membersResponse.data);
 
@@ -60,7 +60,7 @@ export default function Transaction() {
     };
 
     fetchData();
-  }, [id]);
+  }, [groupId]);
 
   // ✅ Add Transaction handler
   const handleAddTransaction = async () => {
@@ -72,7 +72,7 @@ export default function Transaction() {
     try {
       setLoading(true);
       await axiosInstance.post("/TransactionApi", {
-        groupId: Number(id),
+        groupId: Number(groupId),
         payedByUserId: payerId,
         amount: Number(paymentAmount),
       });
@@ -105,7 +105,7 @@ export default function Transaction() {
   return (
     <View style={{ padding: 20 }}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
-        New Transaction for Group ID: {id}
+        New Transaction for Group ID: {groupId}
       </Text>
 
       {group && (

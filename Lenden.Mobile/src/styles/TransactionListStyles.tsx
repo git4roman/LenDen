@@ -1,103 +1,82 @@
 import { StyleSheet } from "react-native";
+import { Colors } from "../theme/colors";
 
 export const styles = StyleSheet.create({
-  // Content container
-  content: {
-    flex: 1,
-  },
+  content: { flex: 1 },
 
-  // Reusable text styles
-  whiteText: {
-    color: "#fff",
-  },
-  grayText: {
-    color: "#888",
-  },
-  lightGrayText: {
-    color: "#d3d3d3",
-  },
-
-  // Reusable layout styles
-  row: {
-    flexDirection: "row",
-  },
-  flex1: {
-    flex: 1,
-  },
-  alignCenter: {
-    alignItems: "center",
-  },
-  justifyBetween: {
-    justifyContent: "space-between",
-  },
-
-  // Transaction styles
-  transactionItem: {
-    marginBottom: 10,
-  },
-  transactionDate: {
-    fontSize: 14,
-    color: "#888",
-    marginBottom: 5,
-    textTransform: "uppercase",
-  },
-  transactionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  transactionDay: {
-    fontSize: 16,
-    color: "#fff",
-    width: 30,
-    textAlign: "center",
-  },
-  transactionDetails: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+  yearHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: Colors.primary,
+    marginVertical: 8,
     marginLeft: 10,
   },
-  transactionPaidBy: {
-    color: "#d3d3d3",
-    fontSize: 12,
-  },
-  transactionAmount: {
-    color: "#fff",
-    fontWeight: "bold",
-    textAlign: "right",
-    width: 80,
-  },
-  marginRight5Text: {
-    marginRight: 5,
+
+  transactionBlock: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    paddingHorizontal: 12,
   },
 
-  // Legacy styles (can be removed if not used elsewhere)
-  transactionContainer: {},
-  transactionSummary: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 10,
-    backgroundColor: "#2a2a2a",
-    borderRadius: 5,
+  dateColumn: {
+    width: 40,
+    alignItems: "center",
+  },
+
+  day: {
+    fontSize: 16,
+    color: Colors.textPrimary,
+    fontWeight: "bold",
+  },
+
+  month: {
+    fontSize: 14,
+    color: Colors.primary,
+    marginTop: 2,
+  },
+
+  detailsColumn: {
+    flex: 1,
+    marginLeft: 10,
+  },
+
+  description: {
+    fontSize: 15,
+    color: Colors.textPrimary,
+  },
+
+  paidInfo: {
+    fontSize: 14,
+    color: Colors.secondary,
+  },
+
+  amount: {
+    width: 90,
+    textAlign: "right",
+    fontWeight: "bold",
+    color: Colors.textPrimary,
+  },
+
+  noTransactionsContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+
+  noTransactionsText: {
+    color: "#888",
     marginTop: 10,
+    fontSize: 16,
+    fontStyle: "italic",
   },
-  transactionToCollect: {
-    backgroundColor: "#4caf50",
-    width: 120,
-    height: 55,
-    textAlign: "center",
-    color: "#fff",
-  },
-  transactionToPay: {
-    backgroundColor: "#ff4d4d",
-    width: 120,
-    height: 55,
-    textAlign: "center",
-    color: "#fff",
-  },
-  transactionList: {
-    marginTop: 10,
+
+  sectionHeader: {
+    backgroundColor: "#f5f5f5",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
   },
 });

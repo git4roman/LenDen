@@ -23,9 +23,14 @@ const Authenticate = () => {
       const token = await SecureStore.getItemAsync("userToken");
       if (token) {
         try {
-          await dispatch(fetchMe()).unwrap();
-          await dispatch(fetchUserFromAuth());
-        } catch {
+          const authResult = await dispatch(fetchMe()).unwrap();
+          if (authResult?.userId && authResult.userId !== 0) {
+            await dispatch(fetchUserFromAuth()).unwrap();
+          } else {
+            console.log("No valid userId found, skipping user fetch");
+          }
+        } catch (error) {
+          console.error("Error fetching user:", error);
           await SecureStore.deleteItemAsync("userToken");
         }
       }

@@ -1,11 +1,13 @@
 import { StyleSheet } from "react-native";
+import { Colors } from "../theme/colors";
 
 export const styles = StyleSheet.create({
   // Container styles
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#1a1a1a",
+    backgroundColor: Colors.background,
+    gap: 0,
   },
   content: {
     flex: 1,
@@ -18,7 +20,7 @@ export const styles = StyleSheet.create({
   },
   groupName: {
     fontSize: 24,
-    color: "#fff",
+    color: Colors.textPrimary,
     textAlign: "center",
     fontWeight: "bold",
   },
@@ -69,10 +71,10 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
   },
   collectColor: {
-    backgroundColor: "#2a9d8f",
+    backgroundColor: Colors.income,
   },
   payColor: {
-    backgroundColor: "#e63946",
+    backgroundColor: Colors.expense,
   },
   collectTextColor: {
     color: "#2a9d8f",
@@ -171,5 +173,42 @@ export const styles = StyleSheet.create({
   },
   transactionList: {
     marginTop: 10,
+  },
+  noTransactionsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50,
+  },
+  noTransactionsText: {
+    color: "#888",
+    marginTop: 10,
+    fontSize: 16,
+    fontStyle: "italic",
+  },
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.secondary,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 50,
+    width: 50,
+    height: 50,
+    gap: 6,
+    position: "absolute",
+    bottom: 25,
+    right: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
