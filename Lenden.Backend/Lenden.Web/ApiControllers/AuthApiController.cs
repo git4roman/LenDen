@@ -26,8 +26,8 @@ public class AuthApiController: ControllerBase
         _currentUserHelper = currentUserHelper;
     }
     
-    [HttpPost("authenticate")]
-    public async Task<IActionResult> Authenticate(UserAuthDto dto)
+    [HttpPost("auth/google/register")]
+    public async Task<IActionResult> Register(UserRegisterDto dto)
     {
         var existingUser = await _unitOfWork.User.GetUserByUidAsync(dto.GoogleId);
         if (existingUser == null)
@@ -37,14 +37,31 @@ public class AuthApiController: ControllerBase
             await _unitOfWork.SaveChangesAsync();
             return Ok(new { token = SetJwtCookie(createdUser) });
         }
-        return Ok(new { token= SetJwtCookie(existingUser) });
+        return Conflict(new {message = "User already exists" });
     }
-    public class UserAuthDto
+    
+    [HttpPost("auth/google/login")]
+    public async Task<IActionResult> Login(UserLoginDto dto)
+    {
+        var existingUser = await _unitOfWork.User.GetUserByUidAsync(dto.GoogleId);
+        if (existingUser == null)
+        {
+            return NotFound("User not found");
+        }
+        return Ok(new { token = SetJwtCookie(existingUser) });
+
+    }
+    public class UserRegisterDto
     {
         public string GoogleId { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
         public string PictureUrl { get; set; }
+    }
+    public class UserLoginDto
+    {
+        public string GoogleId { get; set; }
+        public string Email { get; set; }
     }
     private string GenerateJwtToken(UserEntity user)
     { 
