@@ -4,15 +4,17 @@ import { Text, TouchableOpacity, View } from "react-native";
 import {
   signInWithGoogle,
   signOutGoogle,
-  onAuthenticate,
+  onLoginService,
+  onRegisterService,
 } from "@/src/services";
 import { loginStyles as styles } from "@/src/styles";
-import { UserRegisterDto } from "@/src/types";
+import { UserLoginDto, UserRegisterDto } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState, fetchUserFromAuth } from "../../src/store";
 import { fetchMe, logout } from "@/src/store/authSlice";
+import GoogleButton from "@/src/components/GoogleButton";
 
 const Authenticate = () => {
   const user = useSelector((state: RootState) => state.auth);
@@ -38,7 +40,7 @@ const Authenticate = () => {
     checkUser();
   }, []);
 
-  const onGoogleButtonPress = async () => {
+  const onSignUpPress = async () => {
     try {
       const currentUser = await signInWithGoogle();
       if (currentUser) {
@@ -48,7 +50,25 @@ const Authenticate = () => {
           googleId: currentUser.uid,
           pictureUrl: currentUser.photoURL || "",
         };
-        await onAuthenticate(userRegisterDto);
+        await onRegisterService(userRegisterDto);
+        await dispatch(fetchMe()).unwrap();
+        await dispatch(fetchUserFromAuth());
+        router.replace("/(tabs)/(groups)");
+      }
+    } catch (e) {
+      console.error("Google sign-in error:", e);
+    }
+  };
+
+  const onSignInPress = async () => {
+    try {
+      const currentUser = await signInWithGoogle();
+      if (currentUser) {
+        const userLoginDto: UserLoginDto = {
+          googleId: currentUser.uid,
+          email: currentUser.email,
+        };
+        await onLoginService(userLoginDto);
         await dispatch(fetchMe()).unwrap();
         await dispatch(fetchUserFromAuth());
         router.replace("/(tabs)/(groups)");
@@ -72,7 +92,8 @@ const Authenticate = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to LenDen</Text>
 
-      <GoogleSigninButton onPress={onGoogleButtonPress} />
+      <GoogleButton onPress={onSignInPress} title="Sign in with Google" />
+      <GoogleButton onPress={onSignUpPress} title="Sign up with Google" />
     </View>
   );
 };
