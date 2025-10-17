@@ -27,13 +27,10 @@ export const onLoginService = async (userLoginDto: UserLoginDto) => {
 };
 
 export const onRegisterService = async (userRegisterDto: UserRegisterDto) => {
-  try {
-    const response = await axiosInstance.post(
-      "/AuthApi/auth/google/register",
-      userRegisterDto
-    );
-    await SecureStore.setItemAsync("userToken", response.data.token);
-  } catch (error) {
-    console.error("Error authenticating user:", error);
-  }
+  const response = await axiosInstance.post(
+    "/AuthApi/auth/google/register",
+    userRegisterDto
+  );
+  await SecureStore.setItemAsync("userToken", response.data.token);
+  return response.data;
 };
