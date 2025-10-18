@@ -8,6 +8,7 @@ import {
   IconButton,
 } from "react-native-paper";
 import { Stack, useLocalSearchParams } from "expo-router";
+import * as Contacts from "expo-contacts";
 
 const AddMembers = () => {
   const { groupId } = useLocalSearchParams();

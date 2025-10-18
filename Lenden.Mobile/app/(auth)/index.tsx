@@ -88,9 +88,27 @@ const Authenticate = () => {
         await dispatch(fetchMe()).unwrap();
         await dispatch(fetchUserFromAuth());
         router.replace("/(tabs)/(groups)");
+        // router.replace("/(auth)/askPhoneNumber");
       }
-    } catch (e) {
-      console.error("Google sign-in error:", e);
+    } catch (e: any) {
+      await signOutGoogle();
+      console.error("Google sign-in error:", e.response || e.message);
+      const status = e?.response?.status;
+      const message = e?.response?.data?.message;
+      if (status === 409) {
+        Toast.show({
+          type: "error",
+          text1: "Account Already Exists",
+          text2: "Please use Sign In instead",
+          topOffset: 100,
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Sign In Failed",
+          text2: message || e.message || "Please try again",
+        });
+      }
     }
   };
 
