@@ -28,6 +28,10 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(u => u.FullName)
             .IsRequired()
             .HasMaxLength(100); 
+        
+        builder.Property(u => u.PhoneHash)
+            .HasColumnName("phone_hash")
+            .HasMaxLength(100); 
 
         builder.Property(u => u.GivenName)
             .HasMaxLength(50); 

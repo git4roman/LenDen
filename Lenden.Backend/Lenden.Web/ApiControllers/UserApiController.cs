@@ -89,4 +89,40 @@ public class UserApiController: ControllerBase
         }
         return Ok(members);
     }
+    
+    [Authorize]
+    [HttpPost("addPhoneNumber")]
+    public async Task<IActionResult> AddPhoneNumber([FromQuery] string phoneHashed)
+    {
+        var userId = _currentUserHelper.GetUserId();
+        if(!userId.HasValue) return Unauthorized("User ID not found in token.");
+        var  existingUser = await _unitOfWork.User.GetByIdAsync(userId.Value);
+        if (existingUser == null) return NotFound();
+        existingUser.PhoneHash = phoneHashed;
+        await _unitOfWork.SaveChangesAsync();
+        return Ok();
+    }
+    
+    [Authorize]
+    [HttpPost("check-contacts")]
+    public async Task<IActionResult> CheckContacts([FromBody] List<string> hashedContacts)
+    {
+        var userId =  _currentUserHelper.GetUserId();
+        if (userId == null) return Unauthorized("UnAuthorised user");
+        var currentUserId = userId.Value;
+        var existingUsers = await _context.Users
+            .Where(u => u.PhoneHash != null && hashedContacts.Contains(u.PhoneHash))
+            .Select(u => new { u.Id, u.FullName, u.PhoneHash })
+            .ToListAsync();
+
+        // var foundHashes = existingUsers.Select(u => u.PhoneHash).ToHashSet();
+        // var notFound = hashedContacts
+        //     .Where(h => !foundHashes.Contains(h))
+        //     .Select(h => new { phoneHash = h, inviteLink = $"https://yourapp.com/invite?ref={currentUserId}" });
+
+        return Ok(new { existingUsers });
+    }
+
+    
+    
 }

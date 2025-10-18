@@ -43,6 +43,7 @@ public class UserEntity
     public bool EmailVerified { get; set; }
     public DateOnly CreatedAt { get; private set; } 
     public bool IsActive { get; private set; }
+    public string? PhoneHash { get; set; }
     
     public string Role { get; private set; }
     public ICollection<UserGroupEntity> UserGroups { get; private set; } = new List<UserGroupEntity>();
