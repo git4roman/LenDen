@@ -24,6 +24,7 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState<GroupEntity[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const router = useRouter();
 
@@ -32,10 +33,14 @@ export default function Index() {
 
   const fetchGroups = async () => {
     try {
+      if (!refreshing) setIsLoading(true);
       const response = await axiosInstance.get("/GroupApi");
       setGroups(response.data);
     } catch (error) {
       console.error("Error fetching groups:", error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -82,6 +87,11 @@ export default function Index() {
             </Text>
           ) : null
         }
+        refreshing={refreshing} // 👈 enables the spinner
+        onRefresh={() => {
+          setRefreshing(true);
+          fetchGroups();
+        }}
       />
 
       {/* Floating Add Button */}
