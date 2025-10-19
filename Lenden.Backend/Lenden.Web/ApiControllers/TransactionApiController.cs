@@ -41,7 +41,7 @@ public class TransactionApiController:ControllerBase
             var existingUser = await _unitOfWork.User.GetByIdAsync(model.PayedByUserId);
             if (model.PayedByUserId == null) return NotFound("Payed By user not found");
 
-            var createdTransaction = new TransactionEntity(model.GroupId, model.PayedByUserId, model.Amount);
+            var createdTransaction = new TransactionEntity(model.GroupId, model.PayedByUserId, model.Amount,model.Description);
             await _unitOfWork.Transaction.AddAsync(createdTransaction);
             
             // int[] members = new int[] { 1, 2, 3 };
@@ -98,5 +98,6 @@ public class TransactionApiController:ControllerBase
         public int GroupId { get; set; }
         public int PayedByUserId { get; set; }
         public double Amount { get; set; }
+        public string Description { get; set; }
     }
 }

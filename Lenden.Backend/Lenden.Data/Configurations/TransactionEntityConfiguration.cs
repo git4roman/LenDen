@@ -28,6 +28,12 @@ public class TransactionEntityConfiguration : IEntityTypeConfiguration<Transacti
             .HasColumnName("amount")
             .HasColumnType("decimal(18, 2)")
             .IsRequired();
+        
+        builder.Property(t=>t.Description)
+            .HasColumnName("description")
+            .HasColumnType("varchar(2000)")
+            .HasMaxLength(2000)
+            .IsRequired();
                
         builder.Property(t => t.PaidOnDate)
             .HasColumnName("paid_on_date")

@@ -30,7 +30,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
     const monthStr = paidOn
       .toLocaleString("en-US", { month: "short" })
       .toUpperCase();
-    const paidInfo = `${item.paidByUser.givenName} paid`;
+    const paidInfo = `${item.paidByUser.fullName} paid`;
 
     return (
       <View style={styles.transactionBlock}>
@@ -39,7 +39,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({
           <Text style={styles.month}>{monthStr}</Text>
         </View>
         <View style={styles.detailsColumn}>
-          <Text style={styles.description}>Description of the Payment</Text>
+          <Text style={styles.description}>
+            {item.description || "No description provided"}
+          </Text>
           <Text style={styles.paidInfo}>{paidInfo}</Text>
         </View>
         <Text style={styles.amount}>Rs. {item.amount.toLocaleString()}</Text>

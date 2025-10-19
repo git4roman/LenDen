@@ -1,20 +1,12 @@
-import {
-  View,
-  Text,
-  TextInput,
-  ActivityIndicator,
-  Alert,
-  Pressable,
-} from "react-native";
+import { View, Text, TextInput, ActivityIndicator, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import { axiosInstance } from "@/src/services";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
 import PrimaryButton from "@/src/components/PrimaryButton";
 import { Colors } from "@/src/theme/colors";
 
-// Define the User interface
 interface User {
   id: number;
   fullName: string;
@@ -25,6 +17,7 @@ export default function Transaction() {
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState<User[]>([]);
   const [paymentAmount, setPaymentAmount] = useState("");
+  const [description, setDescription] = useState("");
   const [payerId, setPayerId] = useState<number | null>(null);
   const [group, setGroup] = useState<GroupEntity | null>(null);
 
@@ -35,20 +28,17 @@ export default function Transaction() {
       try {
         setLoading(true);
 
-        // ✅ Fetch all groups, then pick the one matching this ID
         const groupResponse = await axiosInstance.get("/GroupApi");
         const foundGroup = groupResponse.data.find(
           (g: GroupEntity) => g.id == Number(groupId)
         );
         setGroup(foundGroup || null);
 
-        // ✅ Fetch members of this group
         const membersResponse = await axiosInstance.get(
           `/GroupApi/${groupId}/members`
         );
         setMembers(membersResponse.data);
 
-        // Set default payer if available
         if (membersResponse.data.length > 0)
           setPayerId(membersResponse.data[0].id);
       } catch (error: any) {
@@ -62,10 +52,9 @@ export default function Transaction() {
     fetchData();
   }, [groupId]);
 
-  // ✅ Add Transaction handler
   const handleAddTransaction = async () => {
     if (!paymentAmount || !payerId) {
-      Alert.alert("Error", "Please fill all fields.");
+      Alert.alert("Error", "Please fill all required fields.");
       return;
     }
 
@@ -75,10 +64,24 @@ export default function Transaction() {
         groupId: Number(groupId),
         payedByUserId: payerId,
         amount: Number(paymentAmount),
+        description: description, // Added description
       });
 
-      Alert.alert("Success", "Transaction added successfully.");
-      setPaymentAmount("");
+      Alert.alert(
+        "Success",
+        "Transaction added successfully.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setPaymentAmount("");
+              setDescription("");
+              router.back();
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     } catch (error: any) {
       console.error(
         "Transaction error:",
@@ -91,7 +94,6 @@ export default function Transaction() {
     }
   };
 
-  // ✅ Loading indicator
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -101,18 +103,40 @@ export default function Transaction() {
     );
   }
 
-  // ✅ Main view
   return (
     <View style={{ padding: 20 }}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
-        New Transaction for Group ID: {groupId}
+        Transaction for{" "}
+        {group && (
+          <Text
+            style={{
+              marginBottom: 20,
+              fontSize: 24,
+              fontWeight: "bold",
+              fontStyle: "italic",
+            }}
+          >
+            {group.name}
+          </Text>
+        )}
       </Text>
 
-      {group && (
-        <Text style={{ marginBottom: 15, fontSize: 16 }}>
-          Group: {group.name}
-        </Text>
-      )}
+      {/* Description Input */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={{ fontSize: 16, marginBottom: 5 }}>Description</Text>
+        <TextInput
+          style={{
+            borderWidth: 1,
+            borderColor: "gray",
+            padding: 10,
+            borderRadius: 5,
+          }}
+          placeholder="Enter description"
+          placeholderTextColor="gray"
+          value={description}
+          onChangeText={setDescription}
+        />
+      </View>
 
       {/* Payment Amount Input */}
       <View style={{ marginBottom: 20 }}>
@@ -125,6 +149,7 @@ export default function Transaction() {
             borderRadius: 5,
           }}
           placeholder="Enter amount"
+          placeholderTextColor="gray"
           keyboardType="numeric"
           value={paymentAmount}
           onChangeText={setPaymentAmount}
@@ -144,9 +169,7 @@ export default function Transaction() {
           <Picker
             selectedValue={payerId}
             onValueChange={(itemValue) => setPayerId(itemValue)}
-            style={{
-              color: Colors.textSecondary, // Text color for the selected item
-            }}
+            style={{ color: Colors.textSecondary }}
           >
             {members.map((member) => (
               <Picker.Item
@@ -159,7 +182,11 @@ export default function Transaction() {
         </View>
       </View>
 
-      <PrimaryButton title="Add Transaction" onPress={handleAddTransaction} />
+      <PrimaryButton
+        title="Add Transaction"
+        onPress={handleAddTransaction}
+        disabled={false}
+      />
     </View>
   );
 }

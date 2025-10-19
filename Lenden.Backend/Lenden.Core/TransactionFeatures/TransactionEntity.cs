@@ -10,11 +10,12 @@ public class TransactionEntity
         
     }
 
-    public TransactionEntity(int groupId, int paidByUserId, double amount)
+    public TransactionEntity(int groupId, int paidByUserId, double amount,string description)
     {
         GroupId = groupId;
         PaidByUserId = paidByUserId;
         Amount = amount;
+        Description=  description;
         PaidOnDate = DateOnly.FromDateTime(DateTime.Now);
         PaidOnTime = TimeOnly.FromDateTime(DateTime.Now);
         
@@ -22,6 +23,7 @@ public class TransactionEntity
     public int Id { get; set; }
     public int GroupId { get; set; }
     public int PaidByUserId { get; set; }
+    public string? Description { get; set; }
     public UserEntity PaidByUser { get; set; }
     public double Amount { get; set; }
     public DateOnly PaidOnDate { get; set; }

@@ -10,4 +10,5 @@ export interface Transaction {
   paidOnDate: string;
   paidOnTime: string;
   group: GroupEntity;
+  description: string;
 }

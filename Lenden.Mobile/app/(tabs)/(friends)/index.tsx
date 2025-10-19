@@ -146,11 +146,14 @@ export default function Friends() {
       );
 
       const hashes = contactsWithHashes.map((c) => c.hash);
-      const response = await axiosInstance.post("/UserApi/check-contacts", {
-        hashes,
-      });
+      // console.log("Yo chai hashes haru ho,", hashes);
 
-      const contactFriends: UserEntity[] = response.data.existingUsers || [];
+      const response = await axiosInstance.post(
+        "/UserApi/check-contacts",
+        hashes
+      );
+
+      const contactFriends = response.data.existingUsers || [];
 
       if (contactFriends.length === 0) {
         Alert.alert(
@@ -180,9 +183,9 @@ export default function Friends() {
 
         return Array.from(mergedMap.values());
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error checking contacts:", err);
-      Alert.alert("Error", "Failed to fetch contacts. Please try again.");
+      Alert.alert("Error", `Failed to fetch contacts. ${err.message}`);
     } finally {
       setLoading(false);
     }
