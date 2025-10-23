@@ -1,4 +1,6 @@
-﻿using Lenden.Core.BalanceFeatures;
+﻿using System.Reflection;
+using Lenden.Core.BalanceFeatures;
+using Lenden.Core.ExpenseFeatures;
 using Lenden.Core.GroupFeatures;
 using Lenden.Core.TransactionFeatures;
 using Lenden.Core.UserFeatures;
@@ -16,16 +18,13 @@ public class AppDbContext : DbContext
     public DbSet<GroupEntity> Groups { get; set; }
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<TransactionEntity> Transactions { get; set; }
+    public DbSet<ExpenseEntity> Expenses { get; set; }
     public DbSet<BalanceEntity> Balances { get; set; }
     public DbSet<UserGroupEntity> UserGroups{ get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new GroupEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new TransactionEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new BalanceEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new UserGroupEntityConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }
 }

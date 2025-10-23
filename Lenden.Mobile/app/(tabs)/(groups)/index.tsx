@@ -73,12 +73,40 @@ export default function Index() {
     }
   };
 
+  const handleDeleteGroup = async (id: number) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this group?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              await axiosInstance.post(`/GroupApi/${id}/delete`);
+              fetchGroups();
+              Alert.alert("Success", "Group deleted successfully!");
+            } catch (error) {
+              console.error("Error deleting group:", error);
+              Alert.alert("Error", "Failed to delete group. Please try again.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <FlatList
         contentContainerStyle={{ padding: 20 }}
         data={groups}
-        renderItem={({ item }) => <RenderGroupItems item={item} />}
+        renderItem={({ item }) => (
+          <RenderGroupItems item={item} handleDeleteGroup={handleDeleteGroup} />
+        )}
         keyExtractor={(item) => item.id.toString()}
         ListEmptyComponent={
           !isLoading ? (

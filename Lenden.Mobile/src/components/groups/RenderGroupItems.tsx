@@ -17,9 +17,10 @@ import { Colors } from "@/src/theme/colors";
 interface Props {
   item: GroupEntity;
   onPress?: (item: GroupEntity) => void;
+  handleDeleteGroup: (id: number) => void;
 }
 
-export default function RenderGroupItems({ item }: Props) {
+export default function RenderGroupItems({ item, handleDeleteGroup }: Props) {
   const router = useRouter();
   return (
     <TouchableOpacity
@@ -38,7 +39,7 @@ export default function RenderGroupItems({ item }: Props) {
             <View style={styles.textContainer}>
               <Text style={styles.name}>{item.name}</Text>
             </View>
-            <Pressable onPress={() => {}}>
+            <Pressable onPress={() => handleDeleteGroup(item.id)}>
               <AntDesign name="delete" size={20} color={Colors.danger} />
             </Pressable>
           </View>
