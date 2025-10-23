@@ -27,7 +27,7 @@ public class ExpensePayerEntityConfiguration: IEntityTypeConfiguration<ExpensePa
         builder.Property(e=>e.ExpenseId)
             .HasColumnName("expense_id")
             .IsRequired()
-            .HasColumnType("integer");
+            .HasColumnType("bigint");
         
         builder.HasOne(ep => ep.Expense)
             .WithMany()

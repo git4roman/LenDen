@@ -1,4 +1,5 @@
 ﻿using Lenden.Core.BalanceFeatures;
+using Lenden.Core.ExpenseFeatures;
 using Lenden.Core.GroupFeatures;
 using Lenden.Core.TransactionFeatures;
 using Lenden.Core.UserFeatures;
@@ -13,5 +14,7 @@ public interface IUnitOfWork
     ITransactionRepository Transaction { get; }
     IBalanceRepository Balance { get; }
     IUserGroupRepository UserGroup { get; }
+    IExpenseRepository Expense { get; }
+    
     Task SaveChangesAsync();
 }

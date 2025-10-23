@@ -21,8 +21,8 @@ public class BalanceEntityConfiguration : IEntityTypeConfiguration<BalanceEntity
         builder.Property(b => b.GroupId)
             .HasColumnName("group_id")
             .IsRequired();
-        builder.Property(b => b.OwnerId)
-            .HasColumnName("owner_id")
+        builder.Property(b => b.OwedToId)
+            .HasColumnName("owed_to_id")
             .IsRequired();
 
         builder.Property(b => b.OwedById)
@@ -34,7 +34,7 @@ public class BalanceEntityConfiguration : IEntityTypeConfiguration<BalanceEntity
             .HasColumnType("decimal(18, 2)")
             .IsRequired();
         
-        builder.HasIndex(b => new { b.GroupId, b.OwnerId, b.OwedById })
+        builder.HasIndex(b => new { b.GroupId, b.OwedToId, b.OwedById })
             .IsUnique();
 
         builder.HasOne(b => b.Group)

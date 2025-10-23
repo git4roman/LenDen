@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Lenden.Core;
 using Lenden.Core.BalanceFeatures;
+using Lenden.Core.ExpenseFeatures;
 using Lenden.Core.GroupFeatures;
 using Lenden.Core.TransactionFeatures;
 using Lenden.Core.UserFeatures;
@@ -19,6 +20,8 @@ public class UnitOfWork: IUnitOfWork
     
     public IBalanceRepository Balance { get; private set; }
     public IUserGroupRepository UserGroup { get; private set;}
+    public IExpenseRepository Expense { get; private set; }
+    
     public async Task SaveChangesAsync()
     {
         await  _context.SaveChangesAsync();
@@ -32,6 +35,7 @@ public class UnitOfWork: IUnitOfWork
         Transaction = new TransactionRepository(_context);
         Balance = new BalanceRepository(_context);
         UserGroup = new UserGroupRepository(_context);
+        Expense = new ExpenseRepository(_context);
     }
     
 }

@@ -28,16 +28,16 @@ public class BalanceApiController: ControllerBase
         var group = await _unitOfWork.Group.GetByIdAsync(groupId);
         if (group == null) return NotFound();
         // var members = await _context.UserGroups.Include(u=> u.User).Where(u => u.GroupId == groupId).ToListAsync();
-        double toCollect=0;
-        double toPay = 0;
+        decimal toCollect=0;
+        decimal toPay = 0;
         
         var userIdUnextracted = _currentUserHelper.GetUserId();
         var userId = userIdUnextracted.Value;
         
-        var balances = await _context.Balances.Where(u=>(u.OwnerId == userId || u.OwedById == userId) && u.GroupId == groupId).ToListAsync();
+        var balances = await _context.Balances.Where(u=>(u.OwedToId == userId || u.OwedById == userId) && u.GroupId == groupId).ToListAsync();
         foreach (var balance in balances)
         {
-            if (balance.OwnerId == userId)
+            if (balance.OwedToId == userId)
             {
                 if (balance.Amount > 0)
                 {
@@ -75,12 +75,12 @@ public class BalanceApiController: ControllerBase
         var userId = userIdUnextracted.Value;
 
         
-        var balances = await _context.Balances.Where(u=> (u.OwnerId == userId || u.OwedById ==userId) && u.GroupId == groupId).ToListAsync();
+        var balances = await _context.Balances.Where(u=> (u.OwedToId == userId || u.OwedById ==userId) && u.GroupId == groupId).ToListAsync();
         var report = balances
             .Select(b => new
             {
-                FromUser = b.Amount < 0 ? b.OwnerId : b.OwedById,
-                ToUser   = b.Amount < 0 ? b.OwedById : b.OwnerId,
+                FromUser = b.Amount < 0 ? b.OwedToId : b.OwedById,
+                ToUser   = b.Amount < 0 ? b.OwedById : b.OwedToId,
                 Amount   = Math.Abs(b.Amount)
             })
             .Where(r => r.FromUser == userId || r.ToUser == userId)

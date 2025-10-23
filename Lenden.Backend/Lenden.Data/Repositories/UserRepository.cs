@@ -14,9 +14,10 @@ public class UserRepository: Repository<UserEntity>, IUserRepository
         _context = context;
     }
 
-    public Task<UserEntity?> GetUserByEmailAsync(string email)
+    public async Task<UserEntity?> GetUserByEmailAsync(string email)
     {
-        throw new NotImplementedException();
+        return await _context.Users.FirstOrDefaultAsync(u=>u.Email==email);
+        
     }
 
     public async Task<UserEntity?> GetUserByUidAsync(string uid)

@@ -7,38 +7,26 @@ public class UserEntity
     protected UserEntity()
     {
     }
-
     
-    // public UserEntity(string googleId, string email, string fullName, string? givenName = null, string? familyName = null, string? pictureUrl = null)
-    // {
-    //     GoogleId = googleId;
-    //     Email = email;
-    //     FullName = fullName;
-    //     GivenName = givenName;
-    //     FamilyName = familyName;
-    //     PictureUrl = pictureUrl;
-    //     CreatedAt = DateTime.UtcNow;
-    //     IsActive = true;
-    // }
-    public UserEntity(string email, string fullName,string googleId,string pictureUrl)
+    public UserEntity(string email, string fullName,string googleId,string pictureUrl,string authProvider)
     {
         GoogleId = googleId;
         Email = email;
         FullName = fullName;
         PictureUrl = pictureUrl;
-        // GivenName = givenName;
-        // FamilyName = familyName;
-        // PictureUrl = pictureUrl;
         CreatedAt = DateOnly.FromDateTime(DateTime.Now);
         IsActive = true;
         Role = "user";
+        AuthProvider = authProvider;
     }
-
+    
     public int Id { get; private set; }
     public string GoogleId { get; private set; } 
     public string Email { get; private set; } 
     public string FullName { get; private set; } 
     public string? GivenName { get; private set; } 
+    public string AuthProvider { get; private set; }
+    public string? PasswordHash { get; set; } = String.Empty;
     public string? PictureUrl { get; private set; } 
     public bool EmailVerified { get; set; }
     public DateOnly CreatedAt { get; private set; } 

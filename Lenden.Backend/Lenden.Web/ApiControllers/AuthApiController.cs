@@ -4,6 +4,7 @@ using Lenden.Core.UserFeatures;
 using Lenden.Core.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -18,51 +19,102 @@ public class AuthApiController: ControllerBase
     private readonly JwtService _jwtService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly CurrentUserHelper _currentUserHelper;
-    public AuthApiController(IUnitOfWork unitOfWork,IOptions<JwtService> jwtOptions,IHttpContextAccessor httpContextAccessor,CurrentUserHelper currentUserHelper)
+    private PasswordHasher<UserEntity> _passwordHasher;
+    public AuthApiController(IUnitOfWork unitOfWork,IOptions<JwtService> jwtOptions,IHttpContextAccessor httpContextAccessor,CurrentUserHelper currentUserHelper,PasswordHasher<UserEntity> passwordHasher)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtOptions.Value;
         _httpContextAccessor = httpContextAccessor;
         _currentUserHelper = currentUserHelper;
+        _passwordHasher = passwordHasher;
     }
     
-    [HttpPost("auth/google/register")]
+    [HttpPost("auth/register")]
     public async Task<IActionResult> Register(UserRegisterDto dto)
     {
-        var existingUser = await _unitOfWork.User.GetUserByUidAsync(dto.GoogleId);
-        if (existingUser == null)
+        try
         {
-            var createdUser = new UserEntity(dto.Email, dto.FullName, dto.GoogleId, dto.PictureUrl);
-            await _unitOfWork.User.AddAsync(createdUser);
-            await _unitOfWork.SaveChangesAsync();
-            return Ok(new { token = SetJwtCookie(createdUser) });
+            if (dto.AuthProvider == "google")
+            {
+                var existingUser = await _unitOfWork.User.GetUserByUidAsync(dto.GoogleId);
+                if (existingUser == null)
+                {
+                    var createdUser = new UserEntity(dto.Email, dto.FullName, dto.GoogleId, dto.PictureUrl,
+                        dto.AuthProvider);
+                    await _unitOfWork.User.AddAsync(createdUser);
+                    await _unitOfWork.SaveChangesAsync();
+                    return Ok(new { token = SetJwtCookie(createdUser) });
+                }
+                return Conflict(new {message = "User already exists" });
+                
+            }
+            else if (dto.AuthProvider == "email")
+            {
+                var existingUser = await _unitOfWork.User.GetUserByEmailAsync(dto.Email);
+                if (existingUser == null)
+                {
+                    var createdUser = new UserEntity(dto.Email, dto.FullName, dto.GoogleId, dto.PictureUrl,dto.AuthProvider);
+                    string passwordHash = _passwordHasher.HashPassword(createdUser, dto.Password);
+                    createdUser.PasswordHash = passwordHash;
+                    await _unitOfWork.User.AddAsync(createdUser);
+                    await _unitOfWork.SaveChangesAsync();
+                    return Ok(new { token = SetJwtCookie(createdUser) });
+                }
+                return Conflict(new {message = "User already exists" });
+                
+            }
+            else
+            {
+                return BadRequest(new {message = "Invalid auth provider"});
+            }
         }
-        return Conflict(new {message = "User already exists" });
+        catch (Exception e)
+        {
+           return BadRequest(new {message = e.Message});
+        }
     }
     
-    [HttpPost("auth/google/login")]
+    [HttpPost("auth/login")]
     public async Task<IActionResult> Login(UserLoginDto dto)
     {
-        var existingUser = await _unitOfWork.User.GetUserByUidAsync(dto.GoogleId);
-        if (existingUser == null)
+        if (dto.AuthProvider == "google")
         {
-            return NotFound("User not found");
+            var existingUser = await _unitOfWork.User.GetUserByUidAsync(dto.GoogleId);
+            if (existingUser == null) return NotFound("User does not exist");
+            return Ok(new { token = SetJwtCookie(existingUser) });
         }
-        return Ok(new { token = SetJwtCookie(existingUser) });
-
+        else if (dto.AuthProvider == "email")
+        {
+            var existingUser = await _unitOfWork.User.GetUserByEmailAsync(dto.Email);
+            if (existingUser == null) return NotFound("User does not exist");
+            var result = _passwordHasher.VerifyHashedPassword(existingUser, existingUser.PasswordHash, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+                return Unauthorized(new { message = "Incorrect password" });    
+            return Ok(new { token = SetJwtCookie(existingUser) });
+        }
+        else
+        {
+            return BadRequest(new {message = "Invalid auth provider"});
+        }
     }
+    
     public class UserRegisterDto
     {
+        public string AuthProvider { get; set; }
         public string GoogleId { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
         public string PictureUrl { get; set; }
+        public string Password { get; set; }
     }
     public class UserLoginDto
     {
+        public string AuthProvider { get; set; }
         public string GoogleId { get; set; }
         public string Email { get; set; }
+        public string Password { get; set; }
     }
+    
     private string GenerateJwtToken(UserEntity user)
     { 
         var claims = new[]
@@ -105,6 +157,8 @@ public class AuthApiController: ControllerBase
 
         return Ok(new { UserId = userId, Email = email, Role = role });
     }
+    
+    
 
     
     

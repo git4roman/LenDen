@@ -6,11 +6,11 @@ public class BalanceEntity
 {
     protected BalanceEntity(){}
 
-    public BalanceEntity(int groupId, int ownerId, int owedById, double amount)
+    public BalanceEntity(int groupId, int owedToId, int owedById, decimal amount)
     {
         GroupId = groupId;
         Amount = amount;
-        OwnerId = ownerId;
+        OwedToId = owedToId;
         OwedById = owedById;
     }
     
@@ -18,7 +18,7 @@ public class BalanceEntity
     public int GroupId { get; set; }
     public GroupEntity Group { get; set; }
     
-    public int OwnerId { get; set; }
+    public int OwedToId { get; set; }
     public int OwedById { get; set; }
-    public double Amount { get; set; }
+    public decimal Amount { get; set; }
 }

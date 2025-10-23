@@ -1,6 +1,7 @@
 .idea/
 bin/
 obj/
+Lenden.Data/Migrations
 
 appsettings.json
 appsettings.Development.json

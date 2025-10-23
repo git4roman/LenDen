@@ -17,7 +17,7 @@ public class ExpenseEntity
         CreatedDate = DateOnly.FromDateTime(DateTime.Now);
     }
     
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string? Description { get; set; }
     public int MadeById { get; set; }
     public virtual UserEntity MadeBy { get; set; }

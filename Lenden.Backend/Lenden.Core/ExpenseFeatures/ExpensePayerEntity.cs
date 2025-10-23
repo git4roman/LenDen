@@ -10,15 +10,15 @@ public class ExpensePayerEntity
         
     }
 
-    public ExpensePayerEntity(int expenseId, int payerId,decimal amount)
+    public ExpensePayerEntity(long expenseId, int payerId,decimal amount)
     {
         ExpenseId = expenseId;
         PayerId = payerId;
         Amount = amount;
     }
     
-    public int Id { get; set; }
-    public int ExpenseId { get; set; }
+    public long Id { get; set; }
+    public long ExpenseId { get; set; }
     public int PayerId { get; set; }
     public decimal Amount { get; set; }
     

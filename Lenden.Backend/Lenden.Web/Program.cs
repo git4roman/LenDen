@@ -7,6 +7,7 @@ using Lenden.Core.Utilities;
 using Lenden.Data;
 using Lenden.Data.DbContexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -44,7 +45,14 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.Configure<JwtService>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<CurrentUserHelper>();
+builder.Services.AddScoped<PasswordHasher<UserEntity>>();
 
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanCreateExpense", policy =>
+        policy.RequireRole("admin", "user"));
+});
 
 var app = builder.Build();
 
@@ -56,7 +64,10 @@ app.UseHttpsRedirection();
 
 
 app.UseAuthentication();
+
 app.UseAuthorization();
+
+
 
 app.MapControllers(); 
 

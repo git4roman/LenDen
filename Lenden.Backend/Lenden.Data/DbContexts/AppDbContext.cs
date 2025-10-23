@@ -19,6 +19,8 @@ public class AppDbContext : DbContext
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<TransactionEntity> Transactions { get; set; }
     public DbSet<ExpenseEntity> Expenses { get; set; }
+    public DbSet<ExpensePayerEntity> ExpensePayers { get; set; }
+    public DbSet<ExpenseSplitEntity> ExpenseSplitters { get; set; }
     public DbSet<BalanceEntity> Balances { get; set; }
     public DbSet<UserGroupEntity> UserGroups{ get; set; }
 
