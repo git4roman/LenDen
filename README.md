@@ -6,121 +6,76 @@
 
 ## Add new expenses with amount, date, and description.
 
-### Create Groups
-### Picture 1
-<img width="469" height="935" alt="image" src="https://github.com/user-attachments/assets/8248d773-be9f-447b-989b-5c3a82e49b01" />
-
-### Picture 2
+### Create Multiple Groups
 <img width="460" height="1005" alt="image" src="https://github.com/user-attachments/assets/9c3eb795-f8bc-4dcd-b916-3bcd0ee1c813" />
 
 
 ### Add Friends from phone contact
 <img width="456" height="1008" alt="image" src="https://github.com/user-attachments/assets/096bc4cb-f514-44fb-a92e-f826da4c8c65" />
 
-### Add Transaction Backend Logic
-<pre> ```
-  [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> CreateExpense([FromBody] ExpenseDto dto)
-    {
-        var allUserIds = dto.PaidByDto.Select(u => u.UserId)
-            .Concat(dto.SplitBetweenDto.Select(u => u.UserId))
-            .Distinct();
-        foreach(var userId in allUserIds)
-        {
-            var existingUser = await _uow.User.GetByIdAsync(userId);
-            if (existingUser == null) return NotFound($"User with id {userId} doesn't exist");
-        }
-        
-        var splitCount = dto.SplitBetweenDto.Count;
-        
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-        
-        
-        try
-        {
-            var expense = new ExpenseEntity(dto.MadeById, dto.Description, dto.Amount);
-            await _uow.Expense.AddAsync(expense);
-            await _uow.SaveChangesAsync();
-            
+### Create Transaction with multiple payers
+<img width="367" height="808" alt="image" src="https://github.com/user-attachments/assets/ec6021a5-ea96-4122-86cd-1c528793d9a0" />
 
-            foreach (var payer in dto.PaidByDto)
+### Distributes expenses between members with either equally or by custom proportion 
+<pre>```
+  [
+    {
+        "id": 3,
+        "description": "NPL Tickets",
+        "groupId": 1,
+        "madeById": 2,
+        "madeBy": {
+            "id": 2,
+            "fullName": "Roman"
+        },
+        "amount": 1200.00,
+        "createdAt": "22:51:23.4846460",
+        "createdDate": "2025-11-03",
+        "payers": [
             {
-                var expensePayer = new ExpensePayerEntity(expense.Id, payer.UserId, payer.Amount);
-                await _uow.Expense.AddExpensePayer(expensePayer);
-
-                foreach (var splitter in dto.SplitBetweenDto)
-                {
-                    var expenseSplitter = new ExpenseSplitEntity(expense.Id, splitter.UserId, splitter.Amount);
-                    await _uow.Expense.AddExpenseSplitter(expenseSplitter);
-
-                    if (splitter.UserId == payer.UserId)
-                    {
-                        continue;
-                    }
-
-                    var owedToId = Math.Min(payer.UserId, splitter.UserId);
-                    var owedById = Math.Max(payer.UserId, splitter.UserId);
-                    var existingBalance = await _context.Balances.Where(u =>
-                            ((u.OwedToId == owedToId && u.OwedById == owedById) && u.GroupId == dto.GroupId))
-                        .FirstOrDefaultAsync();
-                    if (existingBalance != null)
-                    {
-                        if (payer.UserId == existingBalance.OwedToId)
-                        {
-                            existingBalance.Amount += payer.Amount/splitCount;
-                        }
-                        else
-                        {
-                            existingBalance.Amount -= payer.Amount/splitCount;;
-                        }
-                    }
-                    else
-                    {
-                        
-                        var newBalance = new BalanceEntity(dto.GroupId, owedToId, owedById,
-                            (payer.Amount / splitCount));
-                        await _uow.Balance.AddAsync(newBalance);
-                    }
-
-                } 
+                "payerId": 2,
+                "payer": {
+                    "id": 2,
+                    "fullName": "Roman"
+                },
+                "amount": 1200.00
             }
-            await _uow.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
-  ```</pre>
-
-### Distributes expenses between members
-
-<pre> ```
-  {
-  "groupId": 0,
-  "description": "string",
-  "amount": 0,
-  "paidByDto": [
+        ]
+    },
     {
-      "userId": 0,
-      "amount": 0
+        "id": 4,
+        "description": "string",
+        "groupId": 1,
+        "madeById": 2,
+        "madeBy": {
+            "id": 2,
+            "fullName": "Roman"
+        },
+        "amount": 600.00,
+        "createdAt": "09:34:47.5170700",
+        "createdDate": "2025-11-04",
+        "payers": [
+            {
+                "payerId": 1,
+                "payer": {
+                    "id": 1,
+                    "fullName": "Admin Admin"
+                },
+                "amount": 200.00
+            },
+            {
+                "payerId": 2,
+                "payer": {
+                    "id": 2,
+                    "fullName": "Roman"
+                },
+                "amount": 400.00
+            }
+        ]
     }
-  ],
-  "splitBetweenDto": [
-    {
-      "userId": 0,
-      "amount": 0
-    }
-  ],
-  "madeById": 0
-}
-  ```</pre>
+]```</pre>
+
+### Mutual-balance as well as summary balance per group
+<img width="381" height="174" alt="image" src="https://github.com/user-attachments/assets/933ab0ba-5758-4cc6-a364-86311ea7b5af" />
 
 
-Assign who paid and who participated.
-
-Auto-split expenses equally or by custom proportion.
