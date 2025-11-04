@@ -28,11 +28,6 @@ public class ExpensePayerEntityConfiguration: IEntityTypeConfiguration<ExpensePa
             .HasColumnName("expense_id")
             .IsRequired()
             .HasColumnType("bigint");
-        
-        builder.HasOne(ep => ep.Expense)
-            .WithMany()
-            .HasForeignKey(ep => ep.ExpenseId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(ep => ep.Payer)
             .WithMany()

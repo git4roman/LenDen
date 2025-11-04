@@ -4,7 +4,7 @@ import { Transaction } from "@/src/types/TransactionEntity";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
 
 export const fetchTransactions = (groupId: string) =>
-  axiosInstance.get<Transaction[]>(`/TransactionApi?groupId=${groupId}`);
+  axiosInstance.get<Transaction[]>(`/v1/ExpenseApi/transactions/${groupId}`);
 
 export const fetchGroup = (groupId: string) =>
   axiosInstance.get<GroupEntity>(`/GroupApi/${groupId}/get-group`);

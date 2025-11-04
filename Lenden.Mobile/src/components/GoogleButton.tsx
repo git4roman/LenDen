@@ -46,9 +46,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#ccc",
-    paddingVertical: 12,
+    paddingVertical: 6,
     paddingHorizontal: 20,
-    marginVertical: 10,
+    marginVertical: 4,
   },
   inner: {
     flexDirection: "row",

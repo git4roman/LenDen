@@ -17,7 +17,7 @@ import { UserLoginDto, UserRegisterDto } from "@/src/types";
 export const onLoginService = async (userLoginDto: UserLoginDto) => {
   try {
     const response = await axiosInstance.post(
-      "/AuthApi/auth/google/login",
+      "/AuthApi/auth/login",
       userLoginDto
     );
     await SecureStore.setItemAsync("userToken", response.data.token);
@@ -28,7 +28,7 @@ export const onLoginService = async (userLoginDto: UserLoginDto) => {
 
 export const onRegisterService = async (userRegisterDto: UserRegisterDto) => {
   const response = await axiosInstance.post(
-    "/AuthApi/auth/google/register",
+    "/AuthApi/auth/register",
     userRegisterDto
   );
   await SecureStore.setItemAsync("userToken", response.data.token);

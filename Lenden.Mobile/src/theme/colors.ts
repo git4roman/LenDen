@@ -1,41 +1,41 @@
 export const Colors = {
-  // Base palette — Sunny Beach Day
-  primary: "#3A6D7C", // Soft teal – headers, navbar, branding
-  secondary: "rgba(47, 160, 140, 1)", // Bright sea green – accents, links
-  accent: "#F0D37A", // Sand yellow – buttons, highlights
+  // Base palette — Refined Coastal Theme
+  primary: "#205E6E", // Deeper teal — stronger contrast on white
+  secondary: "#2FB49F", // Bright sea green — accent
+  accent: "#EAC94D", // Vivid sand yellow — highlights/buttons
 
-  success: "#4CAF50", // Green – success messages, confirmations
-  info: "#2196F3", // Blue – informational alerts, tooltips
-  warning: "#F6A56C", // Soft orange – warnings
-  danger: "#EB6A58", // Coral red – errors, critical alerts
-  neutral: "#9E9E9E", // Gray – secondary text, disabled states
-  background: "#F8F9FA", // Light background – default app background
-  surface: "#FFFFFF", // Card, modal, or container surfaces
-  text: "#1E1E1E", // Primary text color
+  success: "#2E7D32", // Darker green — better contrast for success
+  info: "#1565C0", // Strong blue — readable on white
+  warning: "#E68935", // Rich orange — visible but not harsh
+  danger: "#D32F2F", // Deep coral red — sharp for errors
+  neutral: "#757575", // Medium gray — balanced for secondary text
+  background: "#FFFFFF", // Pure white — main background
+  surface: "#FAFAFA", // Light gray surface for cards/modals
+  text: "#1A1A1A", // Deep charcoal — crisp on white
 
   // Backgrounds
-  backgroundLight: "#F8F9FA", // App background for light mode
-  backgroundDark: "#1C1C1C", // App background for dark mode
-  cardLight: "#FFFFFF", // Light surface
-  cardDark: "#2A2A2A", // Dark surface
+  backgroundLight: "#FFFFFF",
+  backgroundDark: "#121212",
+  cardLight: "#FAFAFA",
+  cardDark: "#2C2C2C",
 
   // Text colors
-  textPrimary: "#1A1A1A",
-  textSecondary: "#555555",
-  textLight: "#FFFFFF",
-  textMuted: "#8C8C8C",
+  textPrimary: "#1A1A1A", // Main text (blackish)
+  textSecondary: "#444444", // Subheadings
+  textLight: "#FFFFFF", // On colored buttons
+  textMuted: "#777777", // Less emphasis text
 
   // UI elements
-  border: "#E0E0E0",
-  divider: "#DADADA",
-  shadow: "rgba(0,0,0,0.1)",
+  border: "#E0E0E0", // Subtle divider border
+  divider: "#D6D6D6", // Section divider
+  shadow: "rgba(0, 0, 0, 0.08)", // Softer shadow for light UI
 
-  // Chart colors
+  // Chart colors (strong contrast palette)
   chart: {
-    income: "#2A9D8F",
-    expense: "#E76F51",
-    savings: "#E9C46A",
-    investment: "#F4A261",
-    others: "#264653",
+    income: "#2A9D8F", // Teal
+    expense: "#E76F51", // Coral red
+    savings: "#E9C46A", // Warm gold
+    investment: "#F4A261", // Orange sand
+    others: "#264653", // Deep blue-gray
   },
 };

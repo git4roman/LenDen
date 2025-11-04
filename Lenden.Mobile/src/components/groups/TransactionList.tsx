@@ -13,7 +13,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   transactions,
 }) => {
   const grouped = transactions.reduce((acc: any, item) => {
-    const date = new Date(`${item.paidOnDate}T${item.paidOnTime}`);
+    const date = new Date(`${item.createdDate}T${item.createdAt}`);
     const year = date.getFullYear();
     if (!acc[year]) acc[year] = [];
     acc[year].push(item);
@@ -25,12 +25,12 @@ export const TransactionList: React.FC<TransactionListProps> = ({
     .map((year) => ({ year, data: grouped[year] }));
 
   const renderItem = ({ item }: { item: Transaction }) => {
-    const paidOn = new Date(`${item.paidOnDate}T${item.paidOnTime}`);
-    const dayStr = paidOn.getDate().toString();
-    const monthStr = paidOn
+    const createdOn = new Date(`${item.createdDate}T${item.createdAt}`);
+    const dayStr = createdOn.getDate().toString();
+    const monthStr = createdOn
       .toLocaleString("en-US", { month: "short" })
       .toUpperCase();
-    const paidInfo = `${item.paidByUser.fullName} paid`;
+    const madeByName = item.madeBy?.fullName || "Unknown";
 
     return (
       <View style={styles.transactionBlock}>
@@ -42,7 +42,14 @@ export const TransactionList: React.FC<TransactionListProps> = ({
           <Text style={styles.description}>
             {item.description || "No description provided"}
           </Text>
-          <Text style={styles.paidInfo}>{paidInfo}</Text>
+
+          {/* Render each payer */}
+          {item.payers?.map((p) => (
+            <Text key={p.payerId} style={styles.paidInfo}>
+              {p.payer?.fullName || "Unknown"} paid Rs.{" "}
+              {p.amount.toLocaleString()}
+            </Text>
+          ))}
         </View>
         <Text style={styles.amount}>Rs. {item.amount.toLocaleString()}</Text>
       </View>

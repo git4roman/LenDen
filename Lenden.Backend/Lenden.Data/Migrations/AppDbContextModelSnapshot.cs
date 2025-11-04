@@ -38,16 +38,111 @@ namespace Lenden.Data.Migrations
                         .HasColumnType("int")
                         .HasColumnName("owed_by_id");
 
-                    b.Property<int>("OwnerId")
+                    b.Property<int>("OwedToId")
                         .HasColumnType("int")
-                        .HasColumnName("owner_id");
+                        .HasColumnName("owed_to_id");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupId", "OwnerId", "OwedById")
+                    b.HasIndex("GroupId", "OwedToId", "OwedById")
                         .IsUnique();
 
                     b.ToTable("balance", (string)null);
+                });
+
+            modelBuilder.Entity("Lenden.Core.ExpenseFeatures.ExpenseEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("amount");
+
+                    b.Property<TimeOnly>("CreatedAt")
+                        .HasColumnType("time(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateOnly>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasColumnName("created_date");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("description");
+
+                    b.Property<long>("GroupId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("group_id");
+
+                    b.Property<int>("MadeById")
+                        .HasColumnType("int")
+                        .HasColumnName("made_by_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MadeById");
+
+                    b.ToTable("expenses", (string)null);
+                });
+
+            modelBuilder.Entity("Lenden.Core.ExpenseFeatures.ExpensePayerEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("amount");
+
+                    b.Property<long>("ExpenseId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expense_id");
+
+                    b.Property<int>("PayerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("payer_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.HasIndex("PayerId");
+
+                    b.ToTable("expense_payers", (string)null);
+                });
+
+            modelBuilder.Entity("Lenden.Core.ExpenseFeatures.ExpenseSplitEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("amount");
+
+                    b.Property<long>("ExpenseId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expense_id");
+
+                    b.Property<int>("SplitterId")
+                        .HasColumnType("integer")
+                        .HasColumnName("splitter_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.HasIndex("SplitterId");
+
+                    b.ToTable("expense_splitters", (string)null);
                 });
 
             modelBuilder.Entity("Lenden.Core.GroupFeatures.GroupEntity", b =>
@@ -141,15 +236,24 @@ namespace Lenden.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AuthProvider")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("varchar(2048)")
+                        .HasColumnName("auth_provider");
 
                     b.Property<DateOnly>("CreatedAt")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("email");
 
                     b.Property<bool>("EmailVerified")
                         .HasColumnType("tinyint(1)");
@@ -157,21 +261,26 @@ namespace Lenden.Data.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("full_name");
 
                     b.Property<string>("GivenName")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("GoogleId")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("google_id");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(true);
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("PhoneHash")
                         .HasMaxLength(100)
@@ -180,7 +289,8 @@ namespace Lenden.Data.Migrations
 
                     b.Property<string>("PictureUrl")
                         .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)");
+                        .HasColumnType("varchar(2048)")
+                        .HasColumnName("picture_url");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -226,6 +336,55 @@ namespace Lenden.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("Lenden.Core.ExpenseFeatures.ExpenseEntity", b =>
+                {
+                    b.HasOne("Lenden.Core.UserFeatures.UserEntity", "MadeBy")
+                        .WithMany()
+                        .HasForeignKey("MadeById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("MadeBy");
+                });
+
+            modelBuilder.Entity("Lenden.Core.ExpenseFeatures.ExpensePayerEntity", b =>
+                {
+                    b.HasOne("Lenden.Core.ExpenseFeatures.ExpenseEntity", "Expense")
+                        .WithMany("ExpensePayers")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Lenden.Core.UserFeatures.UserEntity", "Payer")
+                        .WithMany()
+                        .HasForeignKey("PayerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("Payer");
+                });
+
+            modelBuilder.Entity("Lenden.Core.ExpenseFeatures.ExpenseSplitEntity", b =>
+                {
+                    b.HasOne("Lenden.Core.ExpenseFeatures.ExpenseEntity", "Expense")
+                        .WithMany()
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Lenden.Core.UserFeatures.UserEntity", "Splitter")
+                        .WithMany()
+                        .HasForeignKey("SplitterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("Splitter");
                 });
 
             modelBuilder.Entity("Lenden.Core.GroupFeatures.GroupEntity", b =>
@@ -275,6 +434,11 @@ namespace Lenden.Data.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Lenden.Core.ExpenseFeatures.ExpenseEntity", b =>
+                {
+                    b.Navigation("ExpensePayers");
                 });
 
             modelBuilder.Entity("Lenden.Core.GroupFeatures.GroupEntity", b =>

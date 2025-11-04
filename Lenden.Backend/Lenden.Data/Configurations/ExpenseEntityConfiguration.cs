@@ -21,6 +21,10 @@ public class ExpenseEntityConfiguration: IEntityTypeConfiguration<ExpenseEntity>
             .HasColumnName("made_by_id")
             .IsRequired();
         
+        builder.Property(e => e.GroupId)
+            .HasColumnName("group_id")
+            .IsRequired();
+        
         builder.Property(e => e.Description)
             .HasColumnName("description")
             .HasMaxLength(255)
@@ -44,6 +48,9 @@ public class ExpenseEntityConfiguration: IEntityTypeConfiguration<ExpenseEntity>
             .HasForeignKey(e => e.MadeById)
             .OnDelete(DeleteBehavior.Restrict);
         
-        
+        builder.HasMany(e => e.ExpensePayers)
+            .WithOne(ep => ep.Expense)
+            .HasForeignKey(ep => ep.ExpenseId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
     }

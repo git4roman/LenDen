@@ -15,10 +15,13 @@ import {
 import { UserLoginDto, UserRegisterDto } from "@/src/types";
 import { loginStyles as styles } from "@/src/styles";
 import GoogleButton from "@/src/components/GoogleButton";
+import LoginScreen from "@/src/screens/auth/loginScreen";
+import SignupScreen from "@/src/screens/auth/signUpScreen";
 
 const Authenticate = () => {
   const user = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
+  const [loginVisible, setLoginVisible] = React.useState(true);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -44,10 +47,12 @@ const Authenticate = () => {
       const currentUser = await signInWithGoogle();
       if (currentUser) {
         const dto: UserRegisterDto = {
+          authProvider: "google",
           email: currentUser.email,
           fullName: currentUser.displayName || "",
           googleId: currentUser.uid,
           pictureUrl: currentUser.photoURL || "",
+          password: "",
         };
         await onRegisterService(dto);
 
@@ -81,8 +86,10 @@ const Authenticate = () => {
       const currentUser = await signInWithGoogle();
       if (currentUser) {
         const dto: UserLoginDto = {
+          authProvider: "google",
           googleId: currentUser.uid,
           email: currentUser.email,
+          password: "",
         };
         await onLoginService(dto);
         await dispatch(fetchMe()).unwrap();
@@ -120,7 +127,12 @@ const Authenticate = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to LenDen</Text>
+      {/* <Text style={styles.title}>Welcome to LenDen</Text> */}
+      {loginVisible ? (
+        <LoginScreen setLoginVisible={setLoginVisible} />
+      ) : (
+        <SignupScreen setLoginVisible={setLoginVisible} />
+      )}
       <GoogleButton onPress={onSignInPress} title="Sign in with Google" />
       <GoogleButton onPress={onSignUpPress} title="Sign up with Google" />
     </View>

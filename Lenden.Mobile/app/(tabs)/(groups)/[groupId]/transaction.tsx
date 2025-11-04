@@ -6,6 +6,8 @@ import { axiosInstance } from "@/src/services";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
 import PrimaryButton from "@/src/components/PrimaryButton";
 import { Colors } from "@/src/theme/colors";
+import { useSelector } from "react-redux";
+import { RootState } from "@/src/store/store";
 
 interface User {
   id: number;
@@ -20,6 +22,7 @@ export default function Transaction() {
   const [description, setDescription] = useState("");
   const [payerId, setPayerId] = useState<number | null>(null);
   const [group, setGroup] = useState<GroupEntity | null>(null);
+  const currentUserId = useSelector((state: RootState) => state.auth.userId);
 
   useEffect(() => {
     if (!groupId) return;
@@ -60,11 +63,24 @@ export default function Transaction() {
 
     try {
       setLoading(true);
-      await axiosInstance.post("/TransactionApi", {
+      const amountValue = Number(paymentAmount);
+      const perMemberShare = amountValue / members.length;
+
+      await axiosInstance.post("/v1/ExpenseApi", {
         groupId: Number(groupId),
-        payedByUserId: payerId,
-        amount: Number(paymentAmount),
-        description: description, // Added description
+        description,
+        amount: amountValue,
+        paidByDto: [
+          {
+            userId: payerId,
+            amount: amountValue,
+          },
+        ],
+        splitBetweenDto: members.map((m) => ({
+          userId: m.id,
+          amount: perMemberShare,
+        })),
+        madeById: currentUserId,
       });
 
       Alert.alert(

@@ -40,7 +40,7 @@ public class ExpenseApiController: ControllerBase
     }
 
 
-    [Authorize(Policy = "CanCreateExpense")]
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateExpense([FromBody] ExpenseDto dto)
     {
@@ -60,7 +60,7 @@ public class ExpenseApiController: ControllerBase
         
         try
         {
-            var expense = new ExpenseEntity(dto.MadeById, dto.Description, dto.Amount);
+            var expense = new ExpenseEntity(dto.MadeById, dto.Description, dto.Amount, dto.GroupId);
             await _uow.Expense.AddAsync(expense);
             await _uow.SaveChangesAsync();
             
@@ -117,5 +117,42 @@ public class ExpenseApiController: ControllerBase
             throw;
         }
     }
+
+    [Authorize]
+[HttpGet("transactions/{groupId}")]
+public async Task<IActionResult> GetTransactions(int groupId)
+{
+    var group = await _uow.Group.GetByIdAsync(groupId);
+    if (group == null)
+        return NotFound($"Group with id {groupId} doesn't exist");
+
+    var transactions = await _context.Expenses
+        .Where(e => e.GroupId == groupId)
+        .Include(e => e.MadeBy)
+        .Include(e => e.ExpensePayers)
+        .ThenInclude(ep => ep.Payer)
+        .Select(e => new
+        {
+            e.Id,
+            e.Description,
+            e.GroupId,
+            e.MadeById,
+            MadeBy = new { e.MadeBy.Id, e.MadeBy.FullName },
+            e.Amount,
+            e.CreatedAt,
+            e.CreatedDate,
+            Payers = e.ExpensePayers.Select(ep => new
+            {
+                ep.PayerId,
+                Payer = new { ep.Payer.Id, ep.Payer.FullName },
+                ep.Amount
+            }).ToList()
+        })
+        .ToListAsync();
+
+
+    return Ok(transactions);
+}
+
     
 }
