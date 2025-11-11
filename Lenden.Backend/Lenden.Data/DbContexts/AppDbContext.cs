@@ -2,6 +2,7 @@
 using Lenden.Core.BalanceFeatures;
 using Lenden.Core.ExpenseFeatures;
 using Lenden.Core.GroupFeatures;
+using Lenden.Core.SettlementFeatures;
 using Lenden.Core.TransactionFeatures;
 using Lenden.Core.UserFeatures;
 using Lenden.Core.UserGroupFeatures;
@@ -19,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<TransactionEntity> Transactions { get; set; }
     public DbSet<ExpenseEntity> Expenses { get; set; }
+    public DbSet<SettlementEntity> Settlements { get; set; }
     public DbSet<ExpensePayerEntity> ExpensePayers { get; set; }
     public DbSet<ExpenseSplitEntity> ExpenseSplitters { get; set; }
     public DbSet<BalanceEntity> Balances { get; set; }

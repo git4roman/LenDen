@@ -30,6 +30,13 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
     });
   };
 
+  const handleSettlement = async () => {
+    router.push({
+      pathname: `/(tabs)/(groups)/[groupId]/settlement`,
+      params: { groupId: group?.id as number },
+    });
+  };
+
   const total = (balance?.toCollect || 0) + (balance?.toPay || 0);
 
   const collectRatio = balance?.toCollect ? balance.toCollect / total : 0;
@@ -134,27 +141,30 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
         }}
       >
         <Pressable
-          onPress={() => {}}
-          style={{
-            flex: 1,
-            borderWidth: 0.1,
-            paddingVertical: 10,
-            marginRight: 6,
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 5,
-            borderRadius: 6,
-            backgroundColor: Colors.accent,
-            flexDirection: "row",
-          }}
+          onPress={handleSettlement}
+          style={({ pressed }) => [
+            {
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              paddingVertical: 14,
+              borderRadius: 25,
+              backgroundColor: Colors.primary,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              // elevation: 3,
+              transform: pressed ? [{ scale: 0.97 }] : [{ scale: 1 }],
+            },
+          ]}
         >
-          <MaterialIcons
-            name="auto-fix-high"
-            size={18}
-            color={Colors.primary}
-          />
-
-          <Text style={{ color: Colors.primary }}>Settlement</Text>
+          <MaterialIcons name="auto-fix-high" size={20} color="#fff" />
+          <Text style={{ color: "#fff", fontWeight: "600", fontSize: 16 }}>
+            Settle Now
+          </Text>
         </Pressable>
 
         <Pressable

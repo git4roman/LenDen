@@ -6,6 +6,7 @@ export default function GroupIdLayout() {
       <Stack.Screen name="addMembers" options={{ headerShown: false }} />
       <Stack.Screen name="details" options={{ headerShown: false }} />
       <Stack.Screen name="transaction" options={{ headerShown: false }} />
+      <Stack.Screen name="settlement" options={{ headerShown: false }} />
     </Stack>
   );
 }

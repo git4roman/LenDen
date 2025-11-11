@@ -126,7 +126,7 @@ public async Task<IActionResult> GetTransactions(int groupId)
     if (group == null)
         return NotFound($"Group with id {groupId} doesn't exist");
 
-    var transactions = await _context.Expenses
+    var expenses = await _context.Expenses
         .Where(e => e.GroupId == groupId)
         .Include(e => e.MadeBy)
         .Include(e => e.ExpensePayers)
@@ -150,8 +150,25 @@ public async Task<IActionResult> GetTransactions(int groupId)
         })
         .ToListAsync();
 
+    var settlements = await _context.Settlements
+        .Where(s => s.GroupId == groupId)
+        .Include(s => s.FromUser)
+        .Include(s => s.ToUser)
+        .Select(s => new
+        {
+            s.Id,
+            s.GroupId,
+            s.Amount,
+            s.CreatedAt,
+            s.CreatedDate,
+            FromUser = new { s.FromUser.Id, s.FromUser.FullName },
+            ToUser = new { s.ToUser.Id, s.ToUser.FullName }
+        })
+        .ToListAsync();
 
-    return Ok(transactions);
+
+
+    return Ok(new {expenses = expenses, settlements = settlements});
 }
 
     

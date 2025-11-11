@@ -22,47 +22,73 @@ interface User {
   fullName: string;
 }
 
+interface MutualBalance {
+  fromUser: number;
+  toUser: number;
+  amount: number;
+}
+
 export default function Settlement() {
   const { groupId } = useLocalSearchParams();
+  const currentUserId = useSelector((state: RootState) => state.auth.userId);
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [amount, setAmount] = useState("");
-  const [type, setType] = useState<"payable" | "receivable">("payable");
   const [showUserModal, setShowUserModal] = useState(false);
-  const currentUserId = useSelector((state: RootState) => state.auth.userId);
 
   useEffect(() => {
     if (!groupId) return;
-
-    const fetchMembers = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await axiosInstance.get(`/GroupApi/${groupId}/members`);
-        setMembers(res.data);
-        if (res.data.length > 0) setSelectedUser(res.data[0]);
+        const membersRes = await axiosInstance.get(
+          `/GroupApi/${groupId}/members`
+        );
+        const filteredMembers = membersRes.data.filter(
+          (m: User) => m.id !== currentUserId
+        );
+        setMembers(filteredMembers);
+
+        const balanceRes = await axiosInstance.get(
+          `/BalanceApi/${groupId}/mutual-balance`
+        );
+        const balances: MutualBalance[] = balanceRes.data;
+        const userBalances = balances.filter(
+          (b) =>
+            (b.amount > 0 && b.fromUser === currentUserId) ||
+            (b.amount < 0 && b.toUser === currentUserId)
+        );
+        if (userBalances.length > 0) {
+          const firstBalance = userBalances[0];
+          const payToUserId =
+            firstBalance.amount > 0
+              ? firstBalance.toUser
+              : firstBalance.fromUser;
+          const payToUser =
+            filteredMembers.find((m: User) => m.id === payToUserId) || null;
+          setSelectedUser(payToUser);
+          setAmount(Math.abs(firstBalance.amount).toFixed(2));
+        }
       } catch (error) {
-        console.error("Failed to load members", error);
-        Alert.alert("Error", "Failed to load members.");
+        Alert.alert("Error", "Failed to load settlement data.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchMembers();
+    fetchData();
   }, [groupId]);
 
   const handleSubmit = async () => {
     if (!selectedUser || !amount) {
-      Alert.alert("Error", "Please select a user and enter an amount.");
+      Alert.alert("Error", "Please select a user and enter the amount.");
       return;
     }
-
     try {
       setLoading(true);
       const dto = {
-        fromUserId: type === "payable" ? currentUserId : selectedUser.id,
-        toUserId: type === "payable" ? selectedUser.id : currentUserId,
+        fromUserId: currentUserId,
+        toUserId: selectedUser.id,
         amount: Number(amount),
       };
       await axiosInstance.post(`/SettlementApi/${groupId}`, dto);
@@ -70,7 +96,6 @@ export default function Settlement() {
         { text: "OK", onPress: () => router.back() },
       ]);
     } catch (error) {
-      console.error("Settlement error", error);
       Alert.alert("Error", "Failed to submit settlement.");
     } finally {
       setLoading(false);
@@ -142,42 +167,6 @@ export default function Settlement() {
           value={amount}
           onChangeText={setAmount}
         />
-
-        <Text style={{ fontSize: 16, marginBottom: 8 }}>Type</Text>
-        <View style={{ flexDirection: "row", gap: 15, marginBottom: 20 }}>
-          <TouchableOpacity
-            onPress={() => setType("payable")}
-            style={{
-              flex: 1,
-              padding: 12,
-              borderRadius: 8,
-              borderWidth: 1,
-              borderColor: type === "payable" ? Colors.primary : "#ddd",
-              backgroundColor: type === "payable" ? Colors.primary : "#fff",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: type === "payable" ? "#fff" : "#333" }}>
-              Payable
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setType("receivable")}
-            style={{
-              flex: 1,
-              padding: 12,
-              borderRadius: 8,
-              borderWidth: 1,
-              borderColor: type === "receivable" ? Colors.primary : "#ddd",
-              backgroundColor: type === "receivable" ? Colors.primary : "#fff",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: type === "receivable" ? "#fff" : "#333" }}>
-              Receivable
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
 
       <Modal visible={showUserModal} transparent animationType="slide">

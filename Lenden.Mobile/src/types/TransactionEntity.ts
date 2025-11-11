@@ -18,3 +18,13 @@ export interface Transaction {
   description: string;
   payers: TransactionPayer[];
 }
+
+export interface Settlement {
+  id: number;
+  groupId: number;
+  amount: number;
+  createdAt: string;
+  createdDate: string;
+  fromUser: { id: number; fullName: string };
+  toUser: { id: number; fullName: string };
+}

@@ -1,6 +1,6 @@
 import { View, Pressable, ActivityIndicator } from "react-native";
 import React, { useState, useCallback } from "react";
-import { useRouter, Stack, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
@@ -10,6 +10,7 @@ import { GroupHeader } from "@/src/components/groups/GroupHeader";
 import { TransactionList } from "@/src/components/groups/TransactionList";
 import { GroupEntity } from "@/src/types/groups/Interfaces";
 import { Transaction } from "@/src/types/TransactionEntity";
+import { Settlement } from "@/src/types/SettlementEntity";
 import * as api from "@/src/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/src/theme/colors";
@@ -18,7 +19,9 @@ export default function GroupDetails() {
   const router = useRouter();
   const { groupId } = useLocalSearchParams();
   const auth = useSelector((state: RootState) => state.auth);
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [settlements, setSettlements] = useState<Settlement[]>([]);
   const [group, setGroup] = useState<GroupEntity | null>(null);
   const [loading, setLoading] = useState(true);
   const [balance, setBalance] = useState<{ toCollect: number; toPay: number }>({
@@ -53,12 +56,15 @@ export default function GroupDetails() {
           const [transactionsRes, groupRes, balanceRes, mutualBalanceRes] =
             results;
 
-          transactionsRes.status === "fulfilled" &&
-            setTransactions(transactionsRes.value.data);
-          groupRes.status === "fulfilled" && setGroup(groupRes.value.data);
-          balanceRes.status === "fulfilled" &&
+          if (transactionsRes.status === "fulfilled") {
+            setTransactions(transactionsRes.value.data.expenses);
+            setSettlements(transactionsRes.value.data.settlements);
+          }
+
+          if (groupRes.status === "fulfilled") setGroup(groupRes.value.data);
+          if (balanceRes.status === "fulfilled")
             setBalance(balanceRes.value.data);
-          mutualBalanceRes.status === "fulfilled" &&
+          if (mutualBalanceRes.status === "fulfilled")
             setMutualBalance(mutualBalanceRes.value.data);
         } catch (error) {
           console.error("Error fetching data from Group Details:", error);
@@ -98,7 +104,10 @@ export default function GroupDetails() {
           mutualBalance={mutualBalance}
           currentUserId={auth.userId}
         />
-        <TransactionList transactions={transactions} />
+        <TransactionList
+          transactions={transactions}
+          settlements={settlements}
+        />
         <Pressable style={styles.addButton} onPress={handleAddTransaction}>
           <AntDesign name="plus" size={18} color="#fff" />
         </Pressable>
