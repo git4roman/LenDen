@@ -5,14 +5,14 @@ export const styles = StyleSheet.create({
   // Container styles
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 0,
     backgroundColor: Colors.background,
-    gap: 0,
   },
   content: {
     flex: 1,
   },
-
   // Header styles
   header: {
     height: 200,
@@ -24,7 +24,6 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
   },
-
   // Reusable text styles
   whiteText: {
     color: "#fff",
@@ -42,7 +41,6 @@ export const styles = StyleSheet.create({
   lightGrayText: {
     color: "#d3d3d3",
   },
-
   // Reusable layout styles
   row: {
     flexDirection: "row",
@@ -59,7 +57,6 @@ export const styles = StyleSheet.create({
   justifyBetween: {
     justifyContent: "space-between",
   },
-
   // Balance section styles
   balanceRow: {
     flexDirection: "row",
@@ -85,12 +82,10 @@ export const styles = StyleSheet.create({
   marginRight5: {
     marginRight: 5,
   },
-
   // Mutual balance styles
   mutualBalanceContainer: {
     marginTop: 12,
   },
-
   // Transaction styles
   transactionItem: {
     marginBottom: 10,
@@ -131,7 +126,6 @@ export const styles = StyleSheet.create({
   marginRight5Text: {
     marginRight: 5,
   },
-
   // Floating button styles
   floatingButton: {
     position: "absolute",
@@ -145,7 +139,6 @@ export const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-
   // Legacy styles (can be removed if not used elsewhere)
   transactionContainer: {},
   transactionSummary: {

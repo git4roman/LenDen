@@ -12,13 +12,12 @@ import { GroupEntity } from "@/src/types/groups/Interfaces";
 import { Transaction } from "@/src/types/TransactionEntity";
 import * as api from "@/src/api";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "react-native";
+import { Colors } from "@/src/theme/colors";
 
 export default function GroupDetails() {
   const router = useRouter();
   const { groupId } = useLocalSearchParams();
   const auth = useSelector((state: RootState) => state.auth);
-
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [group, setGroup] = useState<GroupEntity | null>(null);
   const [loading, setLoading] = useState(true);
@@ -74,15 +73,24 @@ export default function GroupDetails() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#007BFF" />
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+        <View
+          style={[
+            styles.container,
+            { justifyContent: "center", alignItems: "center" },
+          ]}
+        >
+          <ActivityIndicator size="large" color="#007BFF" />
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <>
-      <Stack.Screen options={{ title: "Group Details" }} />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: Colors.background }}
+      edges={["top"]}
+    >
       <View style={styles.container}>
         <GroupHeader
           group={group}
@@ -95,6 +103,6 @@ export default function GroupDetails() {
           <AntDesign name="plus" size={18} color="#fff" />
         </Pressable>
       </View>
-    </>
+    </SafeAreaView>
   );
 }

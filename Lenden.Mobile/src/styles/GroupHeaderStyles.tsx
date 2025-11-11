@@ -21,11 +21,15 @@ export const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 16,
   },
+  backButton: {
+    marginRight: 10,
+    padding: 6,
+  },
+
   groupName: {
-    fontSize: 24,
+    fontSize: 20,
     color: Colors.primary,
     fontWeight: "bold",
-    flex: 1, // Takes available space
   },
 
   // Reusable text styles

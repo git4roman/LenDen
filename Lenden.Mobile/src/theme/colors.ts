@@ -2,13 +2,13 @@ export const Colors = {
   // Base palette — Refined Coastal Theme
   primary: "#205E6E", // Deeper teal — stronger contrast on white
   secondary: "#2FB49F", // Bright sea green — accent
-  accent: "#EAC94D", // Vivid sand yellow — highlights/buttons
+  accent: "#205e6e0f", // Vivid sand yellow — highlights/buttons
 
   success: "#2E7D32", // Darker green — better contrast for success
   info: "#1565C0", // Strong blue — readable on white
   warning: "#E68935", // Rich orange — visible but not harsh
   danger: "#D32F2F", // Deep coral red — sharp for errors
-  neutral: "#757575", // Medium gray — balanced for secondary text
+  neutral: "rgba(125, 133, 149, 0.8)", // Medium gray — balanced for secondary text
   background: "#FFFFFF", // Pure white — main background
   surface: "#FAFAFA", // Light gray surface for cards/modals
   text: "#1A1A1A", // Deep charcoal — crisp on white

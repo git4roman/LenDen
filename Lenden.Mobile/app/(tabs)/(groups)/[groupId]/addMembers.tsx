@@ -10,6 +10,7 @@ import {
 import { Stack, useLocalSearchParams } from "expo-router";
 import * as Contacts from "expo-contacts";
 import * as Crypto from "expo-crypto";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddMembers = () => {
   const { groupId } = useLocalSearchParams();
@@ -176,8 +177,7 @@ const AddMembers = () => {
   };
 
   return (
-    <>
-      <Stack.Screen options={{ title: "Group Members" }} />
+    <SafeAreaView style={{ flex: 1 }}>
       <PaperProvider>
         <View style={styles.container}>
           <Text style={styles.title}>Group Members ({members.length})</Text>
@@ -233,7 +233,7 @@ const AddMembers = () => {
           />
         </View>
       </PaperProvider>
-    </>
+    </SafeAreaView>
   );
 };
 
@@ -242,7 +242,7 @@ export default AddMembers;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingTop: 16,
     backgroundColor: "#fff",
   },

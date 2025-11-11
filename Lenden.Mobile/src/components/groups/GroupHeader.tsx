@@ -5,7 +5,8 @@ import { GroupEntity } from "@/src/types/groups/Interfaces";
 // import PrimaryButton from "../PrimaryButton";
 import axiosInstance from "@/src/services/axios";
 import { useRouter } from "expo-router";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { Colors } from "@/src/theme/colors";
 
 interface GroupHeaderProps {
   group: GroupEntity | null;
@@ -29,7 +30,7 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
     });
   };
 
-  const total = (balance?.toCollect || 0) + (balance?.toPay || 0); 
+  const total = (balance?.toCollect || 0) + (balance?.toPay || 0);
 
   const collectRatio = balance?.toCollect ? balance.toCollect / total : 0;
   const payRatio = balance?.toPay ? balance.toPay / total : 0;
@@ -37,7 +38,23 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
   return (
     <View style={styles.header}>
       <View style={styles.headerRow}>
-        <Text style={styles.groupName}>{group?.name || "Loading..."}</Text>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <Pressable
+            onPress={() => {
+              router.back();
+            }}
+          >
+            <AntDesign name="arrow-left" size={18} color={Colors.primary} />
+          </Pressable>
+          <Text style={styles.groupName}>{group?.name || "Loading..."}</Text>
+        </View>
         <Pressable style={styles.addButton} onPress={handleAddMembers}>
           {total === 0 ? (
             <>
@@ -106,6 +123,58 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
           }
           return null;
         })}
+      </View>
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: 10,
+          // backgroundColor: Colors.accent,
+        }}
+      >
+        <Pressable
+          onPress={() => {}}
+          style={{
+            flex: 1,
+            borderWidth: 0.1,
+            paddingVertical: 10,
+            marginRight: 6,
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 5,
+            borderRadius: 6,
+            backgroundColor: Colors.accent,
+            flexDirection: "row",
+          }}
+        >
+          <MaterialIcons
+            name="auto-fix-high"
+            size={18}
+            color={Colors.primary}
+          />
+
+          <Text style={{ color: Colors.primary }}>Settlement</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => {}}
+          style={{
+            flex: 1,
+            borderWidth: 0.1,
+            paddingVertical: 10,
+            marginLeft: 6,
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 6,
+            backgroundColor: Colors.accent,
+            flexDirection: "row",
+            gap: 5,
+          }}
+        >
+          <MaterialIcons name="info" size={18} color={Colors.primary} />
+          <Text style={{ color: Colors.primary }}>Details</Text>
+        </Pressable>
       </View>
     </View>
   );
