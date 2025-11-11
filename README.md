@@ -1,126 +1,64 @@
-# Expense Management
+# Expense Management App 💰
 
-## Supports Email/Password login and Google OAuth sign-in
-<img width="408" height="689" alt="image" src="https://github.com/user-attachments/assets/54062344-1240-4e6d-a237-4004b4e881de" />
+Manage your personal and group expenses effortlessly. Track spending, split bills, and keep everyone on the same page.
 
+---
 
-## Add new expenses with amount, date, and description.
+## 🔐 Authentication
+- **Email & Password** login
+- **Google OAuth** sign-in
 
-### Create Groups
-### Picture 1
-<img width="469" height="935" alt="image" src="https://github.com/user-attachments/assets/8248d773-be9f-447b-989b-5c3a82e49b01" />
+<img width="408" height="689" alt="Login screen" src="https://github.com/user-attachments/assets/54062344-1240-4e6d-a237-4004b4e881de" />
 
-### Picture 2
-<img width="460" height="1005" alt="image" src="https://github.com/user-attachments/assets/9c3eb795-f8bc-4dcd-b916-3bcd0ee1c813" />
+---
 
+## 💸 Expense Management
+- Add new expenses with **amount, date, and description**
+- Assign expenses to yourself or other group members
 
-### Add Friends from phone contact
-<img width="456" height="1008" alt="image" src="https://github.com/user-attachments/assets/096bc4cb-f514-44fb-a92e-f826da4c8c65" />
+---
 
-### Add Transaction Backend Logic
-<pre> ```
-  [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> CreateExpense([FromBody] ExpenseDto dto)
-    {
-        var allUserIds = dto.PaidByDto.Select(u => u.UserId)
-            .Concat(dto.SplitBetweenDto.Select(u => u.UserId))
-            .Distinct();
-        foreach(var userId in allUserIds)
-        {
-            var existingUser = await _uow.User.GetByIdAsync(userId);
-            if (existingUser == null) return NotFound($"User with id {userId} doesn't exist");
-        }
-        
-        var splitCount = dto.SplitBetweenDto.Count;
-        
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-        
-        
-        try
-        {
-            var expense = new ExpenseEntity(dto.MadeById, dto.Description, dto.Amount);
-            await _uow.Expense.AddAsync(expense);
-            await _uow.SaveChangesAsync();
-            
+## 👥 Group & Friends Management
+### Create Multiple Groups
+Organize your expenses by different groups like Family, Friends, Trips, etc.
 
-            foreach (var payer in dto.PaidByDto)
-            {
-                var expensePayer = new ExpensePayerEntity(expense.Id, payer.UserId, payer.Amount);
-                await _uow.Expense.AddExpensePayer(expensePayer);
+<img width="460" height="1005" alt="Groups screen" src="https://github.com/user-attachments/assets/9c3eb795-f8bc-4dcd-b916-3bcd0ee1c813" />
 
-                foreach (var splitter in dto.SplitBetweenDto)
-                {
-                    var expenseSplitter = new ExpenseSplitEntity(expense.Id, splitter.UserId, splitter.Amount);
-                    await _uow.Expense.AddExpenseSplitter(expenseSplitter);
+### Add Friends from Phone Contacts
+Easily include friends in your groups using your phone contacts.
 
-                    if (splitter.UserId == payer.UserId)
-                    {
-                        continue;
-                    }
+<img width="456" height="1008" alt="Add friends" src="https://github.com/user-attachments/assets/096bc4cb-f514-44fb-a92e-f826da4c8c65" />
 
-                    var owedToId = Math.Min(payer.UserId, splitter.UserId);
-                    var owedById = Math.Max(payer.UserId, splitter.UserId);
-                    var existingBalance = await _context.Balances.Where(u =>
-                            ((u.OwedToId == owedToId && u.OwedById == owedById) && u.GroupId == dto.GroupId))
-                        .FirstOrDefaultAsync();
-                    if (existingBalance != null)
-                    {
-                        if (payer.UserId == existingBalance.OwedToId)
-                        {
-                            existingBalance.Amount += payer.Amount/splitCount;
-                        }
-                        else
-                        {
-                            existingBalance.Amount -= payer.Amount/splitCount;;
-                        }
-                    }
-                    else
-                    {
-                        
-                        var newBalance = new BalanceEntity(dto.GroupId, owedToId, owedById,
-                            (payer.Amount / splitCount));
-                        await _uow.Balance.AddAsync(newBalance);
-                    }
+---
 
-                } 
-            }
-            await _uow.SaveChangesAsync();
-            await transaction.CommitAsync();
+## 🧾 Transactions
+### Create Transactions with Multiple Payers
+- Each transaction can have **multiple payers**
+- Split amounts **equally** or by **custom proportions**
 
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
-  ```</pre>
-
-### Distributes expenses between members
-
-<pre> ```
+```json
+[
   {
-  "groupId": 0,
-  "description": "string",
-  "amount": 0,
-  "paidByDto": [
-    {
-      "userId": 0,
-      "amount": 0
-    }
-  ],
-  "splitBetweenDto": [
-    {
-      "userId": 0,
-      "amount": 0
-    }
-  ],
-  "madeById": 0
-}
-  ```</pre>
-
-
-Assign who paid and who participated.
-
-Auto-split expenses equally or by custom proportion.
+    "id": 3,
+    "description": "NPL Tickets",
+    "groupId": 1,
+    "madeBy": {"id": 2, "fullName": "Roman"},
+    "amount": 1200.00,
+    "createdDate": "2025-11-03",
+    "payers": [
+      {"payerId": 2, "payer": {"id": 2, "fullName": "Roman"}, "amount": 1200.00}
+    ]
+  },
+  {
+    "id": 4,
+    "description": "Dinner",
+    "groupId": 1,
+    "madeBy": {"id": 2, "fullName": "Roman"},
+    "amount": 600.00,
+    "createdDate": "2025-11-04",
+    "payers": [
+      {"payerId": 1, "payer": {"id": 1, "fullName": "Admin Admin"}, "amount": 200.00},
+      {"payerId": 2, "payer": {"id": 2, "fullName": "Roman"}, "amount": 400.00}
+    ]
+  }
+]
